@@ -12,37 +12,24 @@
             padding: 0;
         }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
-        }
-
-        header img {
-            height: 80px;
+        header img, .img-intermedia img, footer img {
+            width: 100%;
+            display: block;
         }
 
         .titulo {
             text-align: center;
             font-size: 24px;
-            margin-top: 20px;
+            margin: 20px 0 10px 0;
             font-weight: bold;
             color: #222;
-        }
-
-        .subtitulo {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 5px;
-            color: #444;
         }
 
         .estado {
             text-align: center;
             font-size: 22px;
             font-weight: bold;
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 10px;
             border-radius: 10px;
             width: 90%;
@@ -65,18 +52,19 @@
         }
 
         .certificado {
-            border: 2px solid #ccc;
+            border: 3px double #999;
             padding: 20px;
             border-radius: 12px;
             width: 90%;
             max-width: 600px;
             margin: 30px auto;
-            background-color: #f2f2f2;
+            background-color: #f9f9f9;
         }
 
         .dato {
-            margin: 8px 0;
+            margin: 10px 0;
             font-size: 16px;
+            list-style: none;
         }
 
         .valido {
@@ -95,7 +83,7 @@
         }
 
         .btn-regresar a {
-            background-color: #800000;
+            background-color: #daa520;
             color: white;
             text-decoration: none;
             padding: 12px 20px;
@@ -105,23 +93,14 @@
         }
 
         .btn-regresar a:hover {
-            background-color: #a00000;
-        }
-
-        footer {
-            margin-top: 40px;
-            width: 100%;
+            background-color: #c2991b;
         }
 
         footer img {
-            width: 100%;
-            display: block;
+            margin-top: 0;
         }
 
         @media (max-width: 600px) {
-            header img {
-                height: 60px;
-            }
             .titulo {
                 font-size: 20px;
             }
@@ -134,12 +113,10 @@
 <body>
 
     <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
+        <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado">
     </header>
 
-    <div class="titulo">Secretaría de Movilidad</div>
-    <div class="subtitulo">Ciudad de México</div>
+    <div class="titulo">RESULTADO DE CONSULTA</div>
 
     {% if resultado.estado == "No encontrado" %}
         <div class="estado no-encontrado">
@@ -157,13 +134,15 @@
 
     {% if resultado.estado != "No encontrado" %}
     <div class="certificado">
-        <div class="dato"><strong>Fecha de Expedición:</strong> {{ resultado.fecha_expedicion }}</div>
-        <div class="dato"><strong>Fecha de Vencimiento:</strong> {{ resultado.fecha_vencimiento }}</div>
-        <div class="dato"><strong>Marca:</strong> {{ resultado.marca }}</div>
-        <div class="dato"><strong>Línea:</strong> {{ resultado.linea }}</div>
-        <div class="dato"><strong>Año:</strong> {{ resultado.año }}</div>
-        <div class="dato"><strong>Número de Serie:</strong> {{ resultado.numero_serie }}</div>
-        <div class="dato"><strong>Número de Motor:</strong> {{ resultado.numero_motor }}</div>
+        <ul style="padding-left: 0;">
+            <li class="dato"><strong>FECHA DE EXPEDICIÓN</strong><br>{{ resultado.fecha_expedicion }}</li>
+            <li class="dato"><strong>FECHA DE VENCIMIENTO</strong><br>{{ resultado.fecha_vencimiento }}</li>
+            <li class="dato"><strong>MARCA</strong><br>{{ resultado.marca }}</li>
+            <li class="dato"><strong>LÍNEA</strong><br>{{ resultado.linea }}</li>
+            <li class="dato"><strong>AÑO</strong><br>{{ resultado.año }}</li>
+            <li class="dato"><strong>NÚMERO DE SERIE</strong><br>{{ resultado.numero_serie }}</li>
+            <li class="dato"><strong>NÚMERO DE MOTOR</strong><br>{{ resultado.numero_motor }}</li>
+        </ul>
     </div>
     {% endif %}
 
@@ -173,8 +152,12 @@
         <a href="{{ url_for('consulta_folio') }}">Regresar</a>
     </div>
 
+    <div class="img-intermedia">
+        <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja intermedia">
+    </div>
+
     <footer>
-        <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
+        <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página">
     </footer>
 
 </body>
