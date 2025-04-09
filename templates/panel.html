@@ -11,22 +11,20 @@
             margin: 0;
             padding: 0;
         }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
+
+        header img, .img-intermedia img, footer img {
+            width: 100%;
+            display: block;
         }
-        header img {
-            height: 80px;
-        }
+
         .titulo {
             text-align: center;
-            font-size: 28px;
-            margin-top: 30px;
+            font-size: 24px;
+            margin: 30px 0 20px;
             font-weight: bold;
             color: #222;
         }
+
         .botones {
             display: flex;
             justify-content: center;
@@ -35,8 +33,9 @@
             flex-wrap: wrap;
             max-width: 600px;
         }
+
         .btn {
-            background-color: #800000;
+            background-color: #8a1538;
             color: white;
             border: none;
             padding: 14px 22px;
@@ -45,23 +44,14 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+
         .btn:hover {
-            background-color: #a00000;
+            background-color: #6e0f2f;
         }
-        footer {
-            margin-top: 40px;
-            width: 100%;
-        }
-        footer img {
-            width: 100%;
-            display: block;
-        }
+
         @media (max-width: 600px) {
-            header img {
-                height: 60px;
-            }
             .titulo {
-                font-size: 24px;
+                font-size: 22px;
                 margin-top: 20px;
             }
             .btn {
@@ -73,23 +63,26 @@
 </head>
 <body>
 
-    <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
-    </header>
+<header>
+    <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado">
+</header>
 
-    <div class="titulo">Secretaría de Movilidad</div>
+<div class="titulo">Secretaría de Movilidad</div>
 
-    <div class="botones">
-        <a href="{{ url_for('registro_admin') }}"><button class="btn">Registrar Folio</button></a>
-        <a href="{{ url_for('consulta_folio') }}"><button class="btn">Consultar Folio</button></a>
-        <a href="{{ url_for('crear_usuario') }}"><button class="btn">Crear Usuario</button></a>
-        <a href="{{ url_for('logout') }}"><button class="btn">Cerrar Sesión</button></a>
-    </div>
+<div class="botones">
+    <a href="{{ url_for('registro_admin') }}"><button class="btn">Registrar Folio</button></a>
+    <a href="{{ url_for('consulta_folio') }}"><button class="btn">Consultar Folio</button></a>
+    <a href="{{ url_for('crear_usuario') }}"><button class="btn">Crear Usuario</button></a>
+    <a href="{{ url_for('logout') }}"><button class="btn">Cerrar Sesión</button></a>
+</div>
 
-    <footer>
-        <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-    </footer>
+<div class="img-intermedia">
+    <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja intermedia">
+</div>
+
+<footer>
+    <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página">
+</footer>
 
 </body>
-            </html>
+</html>
