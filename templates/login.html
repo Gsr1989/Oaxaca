@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Iniciar Sesión - Validación Vehicular MX</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
             background-color: #ffffff;
@@ -23,7 +23,7 @@
         .titulo {
             text-align: center;
             font-size: 28px;
-            margin-top: 30px;
+            margin-top: 20px;
             font-weight: bold;
             color: #222;
         }
@@ -53,14 +53,19 @@
             cursor: pointer;
             width: 100%;
             font-weight: bold;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #a00000;
         }
         .error {
-            color: red;
+            color: white;
+            background-color: #f44336;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            margin-top: 15px;
             font-weight: bold;
-            margin-top: 10px;
         }
         footer {
             margin-top: 40px;
@@ -76,37 +81,38 @@
             }
             .titulo {
                 font-size: 24px;
+                margin-top: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
-    </header>
+<header>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+    <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
+</header>
 
-    <div class="titulo">Secretaría de Movilidad</div>
+<div class="titulo">Secretaría de Movilidad</div>
 
-    <div class="form-container">
-        <form method="POST">
-            <input type="text" name="username" placeholder="Nombre de usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Iniciar Sesión</button>
-        </form>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="error">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-    </div>
+<div class="form-container">
+    <form method="POST">
+        <input type="text" name="username" placeholder="Nombre de usuario" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        <button type="submit">Iniciar Sesión</button>
+    </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="error">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</div>
 
-    <footer>
-        <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-    </footer>
+<footer>
+    <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
+</footer>
 
 </body>
 </html>
