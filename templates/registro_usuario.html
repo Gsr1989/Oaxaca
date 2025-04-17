@@ -2,11 +2,10 @@
 def registro_usuario():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-
     user_id = session['user_id']
 
     if request.method == 'POST':
-        # —––– Tu lógica de lectura y guardado en Supabase —–––
+        # 1) Leer datos del formulario
         folio         = request.form['folio']
         marca         = request.form['marca']
         linea         = request.form['linea']
@@ -15,27 +14,57 @@ def registro_usuario():
         numero_motor  = request.form['motor']
         vigencia      = int(request.form['vigencia'])
 
-        # … (validaciones, guardado en BD, actualización de folios usados) …
+        # 2) Validar que el folio no exista
+        if supabase.table("folios_registrados") \
+                   .select("*") \
+                   .eq("folio", folio) \
+                   .execute().data:
+            flash("Error: el folio ya existe.", "error")
+            return redirect(url_for('registro_usuario'))
 
-        # Genera el PDF y obtén la ruta
+        # 3) Verificar folios disponibles del usuario
+        usuario = supabase.table("verificaciondigitalcdmx") \
+                          .select("folios_asignac, folios_usados") \
+                          .eq("id", user_id) \
+                          .execute().data[0]
+        restantes = usuario["folios_asignac"] - usuario["folios_usados"]
+        if restantes <= 0:
+            flash("No tienes folios disponibles.", "error")
+            return redirect(url_for('registro_usuario'))
+
+        # 4) Insertar en la base de datos y actualizar contador
+        fecha_exp = datetime.now()
+        fecha_venc = fecha_exp + timedelta(days=vigencia)
+        supabase.table("folios_registrados").insert({
+            "folio": folio,
+            "marca": marca,
+            "linea": linea,
+            "anio": anio,
+            "numero_serie": numero_serie,
+            "numero_motor": numero_motor,
+            "fecha_expedicion": fecha_exp.isoformat(),
+            "fecha_vencimiento": fecha_venc.isoformat()
+        }).execute()
+        supabase.table("verificaciondigitalcdmx").update({
+            "folios_usados": usuario["folios_usados"] + 1
+        }).eq("id", user_id).execute()
+
+        # 5) Generar PDF y enviarlo al cliente
         pdf_path = generar_pdf(folio, marca, linea, anio, numero_serie, numero_motor, vigencia)
-
-        # Verifica que realmente exista
         if not os.path.exists(pdf_path):
             flash("Error: el PDF no se generó correctamente.", "error")
             return redirect(url_for('registro_usuario'))
 
-        # Y finalmente, envíalo al cliente:
         return send_file(
             pdf_path,
             mimetype='application/pdf',
             as_attachment=True,
-            download_name=f"{folio}.pdf"    # nombre que verá el usuario
+            download_name=f"{folio}.pdf"
         )
 
-    # Si es GET, muestra el formulario
-    response   = supabase.table("verificaciondigitalcdmx") \
-                         .select("folios_asignac, folios_usados") \
-                         .eq("id", user_id).execute()
-    folios_info = response.data[0] if response.data else {}
-    return render_template("registro_usuario.html", folios_info=folios_info)
+    # GET → mostrar formulario + datos de folios
+    info = supabase.table("verificaciondigitalcdmx") \
+                   .select("folios_asignac, folios_usados") \
+                   .eq("id", user_id) \
+                   .execute().data[0]
+    return render_template("registro_usuario.html", folios_info=info)
