@@ -1,3 +1,4 @@
+<!-- templates/registro_exitoso.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,7 +23,7 @@
     .btn {
       display: inline-block;
       padding: 10px 20px;
-      margin-top: 20px;
+      margin: 15px 10px 0;
       background-color: #800000;
       color: #fff;
       text-decoration: none;
@@ -37,12 +38,12 @@
 <body>
   <div class="contenido">
     <h1>Registro Exitoso</h1>
-    <p>Folio: {{ folio }}</p>
-    <p>Número de Serie: {{ serie }}</p>
-    <p>Fecha de Generación: {{ fecha_generacion }}</p>
+    <p><strong>Folio:</strong> {{ folio }}</p>
+    <p><strong>Número de Serie:</strong> {{ serie }}</p>
+    <p><strong>Fecha de Generación:</strong> {{ fecha_generacion }}</p>
+
     <a href="{{ url_for('descargar_pdf', folio=folio) }}" class="btn">Descargar PDF</a>
-    <br>
-    <a href="{{ url_for('admin') }}" class="btn">Volver al Panel</a>
+    <a href="{{ url_for('panel') }}" class="btn">Volver al Panel</a>
   </div>
 </body>
 </html>
