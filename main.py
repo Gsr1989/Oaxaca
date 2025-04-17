@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 from datetime import datetime, timedelta
 from supabase import create_client, Client
@@ -22,38 +23,35 @@ def login():
         if username == 'Gsr89roja.' and password == 'serg890105':
             session['admin'] = True
             return redirect(url_for('admin'))
-        response = supabase.table("verificaciondigitalcdmx")\
-            .select("*")\
-            .eq("username", username)\
-            .eq("password", password)\
-            .execute()
-        usuarios = response.data
+        resp = supabase.table("verificaciondigitalcdmx") \
+                       .select("*") \
+                       .eq("username", username) \
+                       .eq("password", password) \
+                       .execute()
+        usuarios = resp.data
         if usuarios:
             session['user_id'] = usuarios[0]['id']
             session['username'] = usuarios[0]['username']
             return redirect(url_for('registro_usuario'))
-        else:
-            flash('Credenciales incorrectas', 'error')
+        flash('Credenciales incorrectas', 'error')
     return render_template('login.html')
 
-# Función para generar el PDF
+# Genera el PDF a partir de la plantilla
 def generar_pdf(folio, marca, linea, anio, numero_serie, numero_motor, vigencia):
-    template_path = "oaxacaverga.pdf"
-    doc = fitz.open(template_path)
+    doc = fitz.open("oaxacaverga.pdf")
     page = doc[0]
-    # Coordenadas
     x_hora, y_hora = 146, 206
     x_serie, y_serie = 136, 166
     x_fecha, y_fecha = x_serie, y_serie - 25
     hora_actual = datetime.now().strftime("%H:%M:%S")
-    fecha_expedicion = datetime.now().strftime("%d/%m/%Y")
-    page.insert_text((x_fecha, y_fecha), fecha_expedicion, fontsize=10)
+    fecha_exped = datetime.now().strftime("%d/%m/%Y")
+    page.insert_text((x_fecha, y_fecha), fecha_exped, fontsize=10)
     page.insert_text((x_serie, y_serie), numero_serie, fontsize=10)
     page.insert_text((x_hora, y_hora), hora_actual, fontsize=10)
-    output_path = "/mnt/data/oaxacaverga_completo_final.pdf"
-    doc.save(output_path)
+    output = f"/mnt/data/{folio}.pdf"
+    doc.save(output)
     doc.close()
-    return output_path
+    return output
 
 @app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
@@ -65,46 +63,51 @@ def registro_usuario():
         marca = request.form['marca']
         linea = request.form['linea']
         anio = request.form['anio']
-        numero_serie = request.form['serie']
-        numero_motor = request.form['motor']
+        serie = request.form['serie']
+        motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
         # Validar folio
         if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
             flash('Error: el folio ya existe.', 'error')
             return redirect(url_for('registro_usuario'))
         # Verificar disponibilidad
-        u = supabase.table("verificaciondigitalcdmx")\
-            .select("folios_asignac, folios_usados")\
-            .eq("id", user_id).execute().data[0]
-        restantes = u['folios_asignac'] - u['folios_usados']
-        if restantes <= 0:
+        u = supabase.table("verificaciondigitalcdmx") \
+                    .select("folios_asignac, folios_usados") \
+                    .eq("id", user_id).execute().data[0]
+        if u['folios_asignac'] - u['folios_usados'] <= 0:
             flash("No tienes folios disponibles.", 'error')
             return redirect(url_for('registro_usuario'))
-        fecha_expedicion = datetime.now()
-        fecha_vencimiento = fecha_expedicion + timedelta(days=vigencia)
-        data = {
+        # Insertar registro
+        fecha_exp = datetime.now()
+        fecha_ven = fecha_exp + timedelta(days=vigencia)
+        supabase.table("folios_registrados").insert({
             "folio": folio,
             "marca": marca,
             "linea": linea,
             "anio": anio,
-            "numero_serie": numero_serie,
-            "numero_motor": numero_motor,
-            "fecha_expedicion": fecha_expedicion.isoformat(),
-            "fecha_vencimiento": fecha_vencimiento.isoformat()
-        }
-        supabase.table("folios_registrados").insert(data).execute()
-        supabase.table("verificaciondigitalcdmx")\
-            .update({"folios_usados": u["folios_usados"] + 1})\
-            .eq("id", user_id).execute()
-        pdf_path = generar_pdf(folio, marca, linea, anio, numero_serie, numero_motor, vigencia)
-        flash("Folio registrado correctamente.", 'success')
-        return send_file(pdf_path, as_attachment=True)
-    u = supabase.table("verificaciondigitalcdmx")\
-        .select("folios_asignac, folios_usados")\
-        .eq("id", user_id).execute().data[0]
-    return render_template("registro_usuario.html", folios_info=u)
+            "numero_serie": serie,
+            "numero_motor": motor,
+            "fecha_expedicion": fecha_exp.isoformat(),
+            "fecha_vencimiento": fecha_ven.isoformat()
+        }).execute()
+        supabase.table("verificaciondigitalcdmx") \
+                .update({"folios_usados": u["folios_usados"] + 1}) \
+                .eq("id", user_id).execute()
+        # Generar y enviar PDF
+        pdf_path = generar_pdf(folio, marca, linea, anio, serie, motor, vigencia)
+        if not os.path.exists(pdf_path):
+            flash("Error al generar el PDF.", "error")
+            return redirect(url_for('registro_usuario'))
+        return send_file(pdf_path,
+                         mimetype='application/pdf',
+                         as_attachment=True,
+                         download_name=f"{folio}.pdf")
+    # GET:
+    info = supabase.table("verificaciondigitalcdmx") \
+                   .select("folios_asignac, folios_usados") \
+                   .eq("id", user_id).execute().data[0]
+    return render_template("registro_usuario.html", folios_info=info)
 
-# — RUTA PARA ADMINISTRADOR — #
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if 'admin' not in session:
@@ -114,40 +117,45 @@ def registro_admin():
         marca = request.form['marca']
         linea = request.form['linea']
         anio = request.form['anio']
-        numero_serie = request.form['serie']
-        numero_motor = request.form['motor']
+        serie = request.form['serie']
+        motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
         if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
             flash('Error: el folio ya existe.', 'error')
             return render_template('registro_admin.html')
-        fecha_expedicion = datetime.now()
-        fecha_vencimiento = fecha_expedicion + timedelta(days=vigencia)
-        data = {
+        fecha_exp = datetime.now()
+        fecha_ven = fecha_exp + timedelta(days=vigencia)
+        supabase.table("folios_registrados").insert({
             "folio": folio,
             "marca": marca,
             "linea": linea,
             "anio": anio,
-            "numero_serie": numero_serie,
-            "numero_motor": numero_motor,
-            "fecha_expedicion": fecha_expedicion.isoformat(),
-            "fecha_vencimiento": fecha_vencimiento.isoformat()
-        }
-        supabase.table("folios_registrados").insert(data).execute()
-        flash("Folio registrado correctamente.", 'success')
-        return redirect(url_for('admin'))
+            "numero_serie": serie,
+            "numero_motor": motor,
+            "fecha_expedicion": fecha_exp.isoformat(),
+            "fecha_vencimiento": fecha_ven.isoformat()
+        }).execute()
+        # Generar y enviar PDF
+        pdf_path = generar_pdf(folio, marca, linea, anio, serie, motor, vigencia)
+        if not os.path.exists(pdf_path):
+            flash("Error al generar el PDF.", "error")
+            return render_template('registro_admin.html')
+        return send_file(pdf_path,
+                         mimetype='application/pdf',
+                         as_attachment=True,
+                         download_name=f"{folio}.pdf")
     return render_template('registro_admin.html')
 
-# — RUTA DE CONSULTA DE FOLIO — #
 @app.route('/consulta_folio', methods=['GET', 'POST'])
 def consulta_folio():
     resultado = None
     if request.method == 'POST':
         folio = request.form['folio']
-        r = supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data
-        if not r:
+        data = supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data
+        if not data:
             resultado = {"estado": "No encontrado", "folio": folio}
         else:
-            reg = r[0]
+            reg = data[0]
             fe = datetime.fromisoformat(reg['fecha_expedicion'])
             fv = datetime.fromisoformat(reg['fecha_vencimiento'])
             estado = "VIGENTE" if datetime.now() <= fv else "VENCIDO"
@@ -214,8 +222,8 @@ def admin_folios():
         if estado_filtro in ['vigente','vencido'] and est.upper() != estado_filtro.upper():
             continue
         if filtro:
-            campo = f[criterio] if criterio in f else ''
-            if filtro.lower() not in str(campo).lower():
+            valor = str(f.get(criterio, '')).lower()
+            if filtro.lower() not in valor:
                 continue
         filtrados.append(f)
     filtrados.sort(key=lambda x: x['fecha_expedicion'], reverse=(ordenar=='desc'))
@@ -233,7 +241,8 @@ def admin_folios():
 def eliminar_folio():
     if 'admin' not in session:
         return redirect(url_for('login'))
-    supabase.table("folios_registrados").delete().eq("folio", request.form['folio']).execute()
+    supabase.table("folios_registrados").delete()\
+            .eq("folio", request.form['folio']).execute()
     flash('Folio eliminado correctamente.', 'success')
     return redirect(url_for('admin_folios'))
 
@@ -253,7 +262,8 @@ def editar_folio(folio):
         }).eq("folio", folio).execute()
         flash("Folio actualizado correctamente.", "success")
         return redirect(url_for('admin_folios'))
-    reg = supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data
+    reg = supabase.table("folios_registrados").select("*")\
+                   .eq("folio", folio).execute().data
     if not reg:
         flash("Folio no encontrado.", "error")
         return redirect(url_for('admin_folios'))
