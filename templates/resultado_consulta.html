@@ -12,9 +12,9 @@
             margin:0;
             padding:0;
         }
-        /* --- Cabecera y franjas Oaxaca --- */
+        /* Banners Oaxaca */
         header img,
-        .img-intermedia img,
+        .banner-extra img,
         footer img{
             width:100%;
             display:block;
@@ -34,7 +34,7 @@
             color:#444;
         }
 
-        /* Estado */
+        /* Estado */
         .estado{
             text-align:center;
             font-size:22px;
@@ -50,7 +50,7 @@
         .vencido{background:#b38b00;}
         .no-encontrado{background:#a00000;}
 
-        /* Certificado */
+        /* Certificado */
         .certificado{
             border:2px solid #ccc;
             padding:20px;
@@ -84,7 +84,7 @@
             color:#333;
         }
 
-        /* Botón */
+        /* Botón */
         .btn-regresar{
             width:90%;
             max-width:600px;
@@ -102,7 +102,7 @@
         }
         .btn-regresar a:hover{background:#6e0f2f;}
 
-        /* Responsive */
+        /* Responsive */
         @media(max-width:600px){
             .titulo{font-size:20px;}
             .estado{font-size:20px;}
@@ -111,7 +111,7 @@
 </head>
 <body>
 
-    <!-- Cabecera Oaxaca -->
+    <!-- Cabecera -->
     <header>
         <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Secretaría de Movilidad Oaxaca">
     </header>
@@ -153,13 +153,14 @@
         <a href="{{ url_for('consulta_folio') }}">Regresar</a>
     </div>
 
-    <!-- Franja intermedia y pie Oaxaca -->
-    <div class="img-intermedia">
-        <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja intermedia">
+    <!-- Banner extra (Oaxacaarriba) pegado al pie -->
+    <div class="banner-extra">
+        <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Franja Oaxacaarriba pegada al pie">
     </div>
 
+    <!-- Pie -->
     <footer>
-        <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página">
+        <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
     </footer>
 
 </body>
