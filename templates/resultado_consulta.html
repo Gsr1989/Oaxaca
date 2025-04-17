@@ -12,14 +12,16 @@
             margin:0;
             padding:0;
         }
-        /* Banners Oaxaca */
+
+        /*‑‑ Banners Oaxaca ‑‑*/
         header img,
-        .banner-extra img,
+        .franja-abajo img,
         footer img{
-            width:100%;
+            width:100%;          /* ocupa todo el ancho disponible */
             display:block;
         }
 
+        /* Títulos */
         .titulo{
             text-align:center;
             font-size:24px;
@@ -34,7 +36,7 @@
             color:#444;
         }
 
-        /* Estado */
+        /* Estado */
         .estado{
             text-align:center;
             font-size:22px;
@@ -50,7 +52,7 @@
         .vencido{background:#b38b00;}
         .no-encontrado{background:#a00000;}
 
-        /* Certificado */
+        /* Certificado */
         .certificado{
             border:2px solid #ccc;
             padding:20px;
@@ -84,7 +86,7 @@
             color:#333;
         }
 
-        /* Botón */
+        /* Botón */
         .btn-regresar{
             width:90%;
             max-width:600px;
@@ -102,7 +104,7 @@
         }
         .btn-regresar a:hover{background:#6e0f2f;}
 
-        /* Responsive */
+        /* Responsive */
         @media(max-width:600px){
             .titulo{font-size:20px;}
             .estado{font-size:20px;}
@@ -111,9 +113,9 @@
 </head>
 <body>
 
-    <!-- Cabecera -->
+    <!-- Encabezado (banner superior) -->
     <header>
-        <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Secretaría de Movilidad Oaxaca">
+        <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
     </header>
 
     <div class="titulo">Secretaría de Movilidad</div>
@@ -153,12 +155,12 @@
         <a href="{{ url_for('consulta_folio') }}">Regresar</a>
     </div>
 
-    <!-- Banner extra (Oaxacaabajo.jpg) pegado al pie -->
-    <div class="banner-extra">
-        <img src="{{ url_for('static', filename Oaxacaabajo') }}" alt="Franja Oaxacaabajo pegada al pie">
+    <!-- Franja Oaxacaabajo pegada al pie -->
+    <div class="franja-abajo">
+        <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
     </div>
 
-    <!-- Pie -->
+    <!-- Pie de página con Masabajo.jpg -->
     <footer>
         <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
     </footer>
