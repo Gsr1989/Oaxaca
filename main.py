@@ -1,4 +1,3 @@
-# ---------------------------  main.py  ---------------------------------
 from flask import (
     Flask, render_template, request, redirect,
     url_for, flash, session, send_file
@@ -9,9 +8,6 @@ from supabase import create_client, Client
 import fitz                            # PyMuPDF
 import os
 
-# ----------------------------------------------------------------------
-#  CONFIGURACIÓN BÁSICA
-# ----------------------------------------------------------------------
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
 
@@ -23,56 +19,37 @@ SUPABASE_KEY = (
 )
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ----------------------------------------------------------------------
-#  FUNCIÓN PARA GENERAR EL PDF CON LA PLANTILLA OAXACA (fecha, serie, hora)
-# ----------------------------------------------------------------------
-os.makedirs("documentos", exist_ok=True)           # carpeta de salida
-
+os.makedirs("documentos", exist_ok=True)
 
 def generar_pdf(folio: str, numero_serie: str) -> str:
-    """
-    Carga oaxacaverga.pdf, inserta:
-        - fecha   (dd/mm/aaaa) en (136, 141)
-        - serie   en (136, 166)
-        - hora    (hh:mm:ss)  en (146, 206)
-    Guarda en documentos/<folio>.pdf  y devuelve esa ruta.
-    """
-    plantilla = "oaxacaverga.pdf"                  # TU plantilla
+    plantilla = "oaxacaverga.pdf"
     doc = fitz.open(plantilla)
     page = doc[0]
 
     ahora = datetime.now(tz=ZoneInfo("America/Mexico_City"))
     page.insert_text((136, 141), ahora.strftime("%d/%m/%Y"), fontsize=10)
-    page.insert_text((136, 166), numero_serie,                 fontsize=10)
-    page.insert_text((146, 206), ahora.strftime("%H:%M:%S"),   fontsize=10)
+    page.insert_text((136, 166), numero_serie, fontsize=10)
+    page.insert_text((146, 206), ahora.strftime("%H:%M:%S"), fontsize=10)
 
     ruta = f"documentos/{folio}.pdf"
     doc.save(ruta)
     doc.close()
     return ruta
 
-
-# ----------------------------------------------------------------------
-#                              RUTAS
-# ----------------------------------------------------------------------
 @app.route('/')
 def inicio():
     return redirect(url_for('login'))
 
-
-# ----------------------------- LOGIN ----------------------------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        # súper‑admin local
         if username == 'Gsr89roja.' and password == 'serg890105':
             session['admin'] = True
             return redirect(url_for('admin'))
 
-        # usuarios normales en supabase
         res = supabase.table("verificaciondigitalcdmx") \
                       .select("*") \
                       .eq("username", username) \
@@ -85,16 +62,12 @@ def login():
         flash("Credenciales incorrectas", "error")
     return render_template("login.html")
 
-
-# ----------------------------- PANEL ADMIN ----------------------------
 @app.route('/admin')
 def admin():
     if 'admin' not in session:
         return redirect(url_for('login'))
     return render_template("panel.html")
 
-
-# ----------------------------- CREAR USUARIO --------------------------
 @app.route('/crear_usuario', methods=['GET', 'POST'])
 def crear_usuario():
     if 'admin' not in session:
@@ -120,8 +93,6 @@ def crear_usuario():
 
     return render_template("crear_usuario.html")
 
-
-# ----------------------- REGISTRO DE FOLIO (USUARIO) ------------------
 @app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
     if 'user_id' not in session:
@@ -134,13 +105,11 @@ def registro_usuario():
         numero_serie = request.form['serie']
         vigencia     = int(request.form['vigencia'])
 
-        # folio duplicado
         if supabase.table("folios_registrados").select("folio") \
                    .eq("folio", folio).execute().data:
             flash("Folio ya existe.", "error")
             return redirect(url_for('registro_usuario'))
 
-        # folios disponibles del usuario
         u = supabase.table("verificaciondigitalcdmx") \
                     .select("folios_asignac, folios_usados") \
                     .eq("id", uid).execute().data[0]
@@ -164,7 +133,6 @@ def registro_usuario():
             "folios_usados": u['folios_usados'] + 1
         }).eq("id", uid).execute()
 
-        # generar y descargar PDF
         return send_file(generar_pdf(folio, numero_serie), as_attachment=True)
 
     info = supabase.table("verificaciondigitalcdmx") \
@@ -172,8 +140,6 @@ def registro_usuario():
                    .eq("id", uid).execute().data[0]
     return render_template("registro_usuario.html", folios_info=info)
 
-
-# ----------------------- REGISTRO DE FOLIO (ADMIN) --------------------
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if 'admin' not in session:
@@ -205,14 +171,10 @@ def registro_admin():
 
     return render_template("registro_admin.html")
 
-
-# ----------------------- DESCARGAR PDF POR FOLIO ----------------------
 @app.route('/descargar_pdf/<folio>')
 def descargar_pdf(folio):
     return send_file(f"documentos/{folio}.pdf", as_attachment=True)
 
-
-# ----------------------- CONSULTAR FOLIO ------------------------------
 @app.route('/consulta_folio', methods=['GET', 'POST'])
 def consulta_folio():
     resultado = None
@@ -226,8 +188,9 @@ def consulta_folio():
         else:
             r     = row[0]
             f_exp = datetime.fromisoformat(r['fecha_expedicion'])
-            f_ven = datetime.fromisoformat(r['fecha_vencimiento'])
-            estado = "VIGENTE" if datetime.now(tz=ZoneInfo("America/Mexico_City")) <= f_ven else "VENCIDO"
+            f_ven = datetime.fromisoformat(r['fecha_vencimiento']).replace(tzinfo=ZoneInfo("America/Mexico_City"))
+            ahora = datetime.now(tz=ZoneInfo("America/Mexico_City"))
+            estado = "VIGENTE" if ahora <= f_ven else "VENCIDO"
             resultado = {
                 "estado": estado,
                 "color":  "verde" if estado == "VIGENTE" else "cafe",
@@ -243,8 +206,6 @@ def consulta_folio():
         return render_template("resultado_consulta.html", resultado=resultado)
     return render_template("consulta_folio.html")
 
-
-# ----------------------- LISTADO / FILTRO FOLIOS ----------------------
 @app.route('/admin_folios')
 def admin_folios():
     if 'admin' not in session:
@@ -286,8 +247,6 @@ def admin_folios():
                            fecha_inicio=fecha_inicio,
                            fecha_fin=fecha_fin)
 
-
-# ----------------------- EDITAR FOLIO ---------------------------------
 @app.route('/editar_folio/<folio>', methods=['GET', 'POST'])
 def editar_folio(folio):
     if 'admin' not in session:
@@ -314,8 +273,6 @@ def editar_folio(folio):
     flash("Folio no encontrado.", "error")
     return redirect(url_for('admin_folios'))
 
-
-# ----------------------- ELIMINAR FOLIO -------------------------------
 @app.route('/eliminar_folio', methods=['POST'])
 def eliminar_folio():
     if 'admin' not in session:
@@ -326,15 +283,10 @@ def eliminar_folio():
     flash("Folio eliminado.", "success")
     return redirect(url_for('admin_folios'))
 
-
-# ----------------------- LOGOUT ---------------------------------------
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
-
-# ----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True)
-# ----------------------------------------------------------------------
