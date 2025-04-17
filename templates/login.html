@@ -1,3 +1,4 @@
+<!-- templates/login.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,12 +12,10 @@
             margin: 0;
             padding: 0;
         }
-
         header img, .img-intermedia img, footer img {
             width: 100%;
             display: block;
         }
-
         .titulo {
             text-align: center;
             font-size: 24px;
@@ -24,7 +23,6 @@
             font-weight: bold;
             color: #222;
         }
-
         .form-container {
             max-width: 400px;
             margin: 30px auto;
@@ -33,7 +31,6 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-
         input {
             width: 100%;
             padding: 12px;
@@ -42,7 +39,6 @@
             border-radius: 6px;
             font-size: 16px;
         }
-
         button {
             background-color: #8a1538;
             color: white;
@@ -55,12 +51,10 @@
             font-weight: bold;
             margin-top: 10px;
         }
-
         button:hover {
             background-color: #6e0f2f;
         }
-
-        .error {
+        .mensaje {
             color: white;
             background-color: #f44336;
             padding: 10px;
@@ -69,7 +63,6 @@
             margin-top: 15px;
             font-weight: bold;
         }
-
         @media (max-width: 600px) {
             .titulo {
                 font-size: 20px;
@@ -86,7 +79,7 @@
 <div class="titulo">Iniciar Sesión</div>
 
 <div class="form-container">
-    <form method="POST">
+    <form action="{{ url_for('login') }}" method="POST">
         <input type="text" name="username" placeholder="Nombre de usuario" required>
         <input type="password" name="password" placeholder="Contraseña" required>
         <button type="submit">Iniciar Sesión</button>
@@ -94,7 +87,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="error">{{ message }}</div>
+          <div class="mensaje {{ category }}">{{ message }}</div>
         {% endfor %}
       {% endif %}
     {% endwith %}
