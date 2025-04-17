@@ -12,7 +12,12 @@ app.secret_key = 'clave_muy_segura_123456'
 
 # Credenciales de Supabase
 SUPABASE_URL = "https://xsagwqepoljfsogusubw.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzYWd3cWVwbXplY3VzdWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5NjM3NTUsImV4cCI6MjA1OTUzOTc1NX0.NUixULn0m2o49At8j6X58UqbXre2O2_JStqzls_8Gws"
+SUPABASE_KEY = (
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+    "eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzYWd3cWVwbXplY3VzdWJ3Iiwicm9s"
+    "ZSI6ImFub24iLCJpYXQiOjE3NDM5NjM3NTUsImV4cCI6MjA1OTUzOTc1NX0."
+    "NUixULn0m2o49At8j6X58UqbXre2O2_JStqzls_8Gws"
+)
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Carpeta donde vamos a guardar los PDFs generados
@@ -20,10 +25,9 @@ os.makedirs('documentos', exist_ok=True)
 
 
 # ------------------------
-#  Función para generar PDF
+# Función para generar PDF
 # ------------------------
 def generar_pdf(folio, numero_serie):
-    # Abrimos la plantilla
     plantilla = "oaxacaverga.pdf"
     doc = fitz.open(plantilla)
     page = doc[0]
@@ -50,7 +54,7 @@ def generar_pdf(folio, numero_serie):
 
 
 # ------------------------
-#  Rutas de la aplicación
+# Rutas de la aplicación
 # ------------------------
 
 @app.route('/')
@@ -130,7 +134,10 @@ def registro_admin():
         vig   = int(request.form['vigencia'])
 
         # Preguardado
-        if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
+        if supabase.table("folios_registrados") \
+                    .select("*") \
+                    .eq("folio", folio) \
+                    .execute().data:
             flash('Folio ya existe.', 'error')
             return render_template('registro_admin.html')
 
@@ -168,14 +175,18 @@ def registro_usuario():
         vig   = int(request.form['vigencia'])
 
         # Ya existe?
-        if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
+        if supabase.table("folios_registrados") \
+                    .select("*") \
+                    .eq("folio", folio) \
+                    .execute().data:
             flash('Folio ya existe.', 'error')
             return redirect(url_for('registro_usuario'))
 
         # Quedan folios?
         u = supabase.table("verificaciondigitalcdmx") \
                     .select("folios_asignac,folios_usados") \
-                    .eq("id", session['user_id']).execute().data[0]
+                    .eq("id", session['user_id']) \
+                    .execute().data[0]
         if u['folios_asignac'] - u['folios_usados'] < 1:
             flash('No tienes folios disponibles.', 'error')
             return redirect(url_for('registro_usuario'))
@@ -206,7 +217,8 @@ def registro_usuario():
     # Mostrar info de folios
     info = supabase.table("verificaciondigitalcdmx") \
                    .select("folios_asignac,folios_usados") \
-                   .eq("id", session['user_id']).execute().data[0]
+                   .eq("id", session['user_id']) \
+                   .execute().data[0]
     return render_template('registro_usuario.html', folios_info=info)
 
 
@@ -215,7 +227,10 @@ def consulta_folio():
     resultado = None
     if request.method == 'POST':
         folio = request.form['folio']
-        data  = supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data
+        data  = supabase.table("folios_registrados") \
+                        .select("*") \
+                        .eq("folio", folio) \
+                        .execute().data
         if not data:
             resultado = {"estado": "No encontrado", "folio": folio}
         else:
