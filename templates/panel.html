@@ -1,3 +1,4 @@
+<!-- templates/panel.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,12 +12,12 @@
             margin: 0;
             padding: 0;
         }
-
-        header img, .img-intermedia img, footer img {
+        header img,
+        .img-intermedia img,
+        footer img {
             width: 100%;
             display: block;
         }
-
         .titulo {
             text-align: center;
             font-size: 24px;
@@ -24,7 +25,6 @@
             font-weight: bold;
             color: #222;
         }
-
         .botones {
             display: flex;
             justify-content: center;
@@ -33,22 +33,19 @@
             flex-wrap: wrap;
             max-width: 600px;
         }
-
         .btn {
             background-color: #8a1538;
             color: white;
-            border: none;
+            text-decoration: none;
             padding: 14px 22px;
             font-size: 16px;
             border-radius: 6px;
-            cursor: pointer;
+            text-align: center;
             transition: background-color 0.3s ease;
         }
-
         .btn:hover {
             background-color: #6e0f2f;
         }
-
         @media (max-width: 600px) {
             .titulo {
                 font-size: 22px;
@@ -56,7 +53,6 @@
             }
             .btn {
                 width: 100%;
-                text-align: center;
             }
         }
     </style>
@@ -70,10 +66,10 @@
 <div class="titulo">Secretaría de Movilidad</div>
 
 <div class="botones">
-    <a href="{{ url_for('registro_admin') }}"><button class="btn">Registrar Folio</button></a>
-    <a href="{{ url_for('consulta_folio') }}"><button class="btn">Consultar Folio</button></a>
-    <a href="{{ url_for('crear_usuario') }}"><button class="btn">Crear Usuario</button></a>
-    <a href="{{ url_for('logout') }}"><button class="btn">Cerrar Sesión</button></a>
+    <a href="{{ url_for('registro_admin') }}" class="btn">Registrar Folio</a>
+    <a href="{{ url_for('consulta_folio') }}" class="btn">Consultar Folio</a>
+    <a href="{{ url_for('crear_usuario') }}" class="btn">Crear Usuario</a>
+    <a href="{{ url_for('logout') }}" class="btn">Cerrar Sesión</a>
 </div>
 
 <div class="img-intermedia">
