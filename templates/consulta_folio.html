@@ -1,4 +1,4 @@
-<!-- consulta_folio.html -->
+<!-- templates/consulta_folio.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -56,6 +56,24 @@
             background-color: #6e0f2f;
         }
 
+        /* NUEVO: Estilos para la sección de resultados */
+        .resultado {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f2f2f2;
+            font-size: 16px;
+            color: #333;
+        }
+        .resultado h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #8a1538;
+        }
+        .resultado p {
+            margin: 8px 0;
+        }
+
         @media (max-width: 600px) {
             .titulo {
                 font-size: 18px;
@@ -76,10 +94,27 @@
     <div class="titulo">INGRESA EL FOLIO PARA LA CONSULTA</div>
 
     <main>
-        <form action="/consulta_folio" method="POST">
+        <form action="{{ url_for('consulta_folio') }}" method="POST">
             <input type="text" name="folio" placeholder="Ingresa tu folio" required>
             <button type="submit">Consultar</button>
         </form>
+
+        {% if resultado %}
+            <div class="resultado">
+                <h2>Resultado de la Consulta</h2>
+                <p><strong>Folio:</strong> {{ resultado.folio }}</p>
+                <p><strong>Estado:</strong> {{ resultado.estado }}</p>
+                {% if resultado.estado != 'No encontrado' %}
+                    <p><strong>Fecha de Expedición:</strong> {{ resultado.fecha_expedicion }}</p>
+                    <p><strong>Fecha de Vencimiento:</strong> {{ resultado.fecha_vencimiento }}</p>
+                    <p><strong>Marca:</strong> {{ resultado.marca }}</p>
+                    <p><strong>Línea:</strong> {{ resultado.linea }}</p>
+                    <p><strong>Año:</strong> {{ resultado.año }}</p>
+                    <p><strong>Número de Serie:</strong> {{ resultado.numero_serie }}</p>
+                    <p><strong>Número de Motor:</strong> {{ resultado.numero_motor }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
     </main>
 
     <div class="img-intermedia">
