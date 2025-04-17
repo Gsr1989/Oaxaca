@@ -1,4 +1,3 @@
-<!-- templates/resultado_consulta.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,114 +5,116 @@
     <title>Resultado de Consulta</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body{
-            background:#ffffff;
-            font-family:Arial, sans-serif;
-            margin:0;
-            padding:0;
+        body {
+            background: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        /*‑‑ Banners Oaxaca ‑‑*/
         header img,
         .franja-abajo img,
-        footer img{
-            width:100%;          /* ocupa todo el ancho disponible */
-            display:block;
+        footer img {
+            width: 100%;
+            display: block;
         }
 
-        /* Títulos */
-        .titulo{
-            text-align:center;
-            font-size:24px;
-            margin:20px 0 5px;
-            font-weight:bold;
-            color:#222;
-        }
-        .subtitulo{
-            text-align:center;
-            font-size:18px;
-            margin-bottom:10px;
-            color:#444;
+        .titulo {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0 5px;
+            font-weight: bold;
+            color: #222;
         }
 
-        /* Estado */
-        .estado{
-            text-align:center;
-            font-size:22px;
-            font-weight:bold;
-            margin:30px auto 0;
-            padding:10px;
-            border-radius:10px;
-            width:90%;
-            max-width:600px;
-            color:#fff;
-        }
-        .verde{background:#28a745;}
-        .vencido{background:#b38b00;}
-        .no-encontrado{background:#a00000;}
-
-        /* Certificado */
-        .certificado{
-            border:2px solid #ccc;
-            padding:20px;
-            border-radius:12px;
-            width:90%;
-            max-width:600px;
-            margin:30px auto;
-            background:#f2f2f2;
-        }
-        .recuadro-interno{
-            border:2px solid #aaa;
-            padding:20px;
-            border-radius:12px;
-            background:#fff;
-        }
-        .dato{
-            margin:12px 0;
-            font-size:16px;
-        }
-        .dato strong{
-            display:block;
-            font-size:15px;
-            margin-bottom:5px;
-            color:#222;
+        .subtitulo {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #444;
         }
 
-        .valido{
-            text-align:center;
-            font-weight:bold;
-            margin-top:20px;
-            color:#333;
+        .estado {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 30px auto 0;
+            padding: 10px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            color: #fff;
         }
 
-        /* Botón */
-        .btn-regresar{
-            width:90%;
-            max-width:600px;
-            margin:30px auto;
-            text-align:center;
-        }
-        .btn-regresar a{
-            background:#8a1538;
-            color:#fff;
-            text-decoration:none;
-            padding:12px 20px;
-            border-radius:8px;
-            font-size:16px;
-            display:inline-block;
-        }
-        .btn-regresar a:hover{background:#6e0f2f;}
+        .verde { background: #28a745; }
+        .vencido { background: #b38b00; }
+        .no-encontrado { background: #a00000; }
 
-        /* Responsive */
-        @media(max-width:600px){
-            .titulo{font-size:20px;}
-            .estado{font-size:20px;}
+        .certificado {
+            border: 2px solid #ccc;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            background: #f2f2f2;
+        }
+
+        .recuadro-interno {
+            border: 2px solid #aaa;
+            padding: 20px;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .dato {
+            margin: 12px 0;
+            font-size: 16px;
+        }
+
+        .dato strong {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 5px;
+            color: #222;
+        }
+
+        .valido {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .btn-regresar {
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        .btn-regresar a {
+            background: #8a1538;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .btn-regresar a:hover {
+            background: #6e0f2f;
+        }
+
+        @media(max-width:600px) {
+            .titulo { font-size: 20px; }
+            .estado { font-size: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Encabezado (banner superior) -->
     <header>
         <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
     </header>
@@ -121,7 +122,7 @@
     <div class="titulo">Secretaría de Movilidad</div>
     <div class="subtitulo">Gobierno del Estado de Oaxaca</div>
 
-    {% if resultado.estado == "No encontrado" %}
+    {% if resultado.estado == "NO SE ENCUENTRA REGISTRADO" %}
         <div class="estado no-encontrado">
             FOLIO {{ resultado.folio }} : NO SE ENCUENTRA REGISTRADO
         </div>
@@ -135,7 +136,7 @@
         </div>
     {% endif %}
 
-    {% if resultado.estado != "No encontrado" %}
+    {% if resultado.estado != "NO SE ENCUENTRA REGISTRADO" %}
     <div class="certificado">
         <div class="recuadro-interno">
             <div class="dato"><strong>FECHA DE EXPEDICIÓN</strong>{{ resultado.fecha_expedicion }}</div>
@@ -155,12 +156,10 @@
         <a href="{{ url_for('consulta_folio') }}">Regresar</a>
     </div>
 
-    <!-- Franja Oaxacaabajo pegada al pie -->
     <div class="franja-abajo">
         <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
     </div>
 
-    <!-- Pie de página con Masabajo.jpg -->
     <footer>
         <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
     </footer>
