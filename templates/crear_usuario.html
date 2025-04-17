@@ -1,8 +1,9 @@
+<!-- templates/crear_usuario.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Crear Usuario</title>
+    <title>Secretaría de Movilidad - Crear Usuario</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
@@ -11,12 +12,10 @@
             margin: 0;
             padding: 0;
         }
-
         header img, .img-intermedia img, footer img {
             width: 100%;
             display: block;
         }
-
         .titulo {
             text-align: center;
             font-size: 24px;
@@ -24,7 +23,6 @@
             font-weight: bold;
             color: #222;
         }
-
         .formulario {
             max-width: 600px;
             margin: 20px auto;
@@ -32,7 +30,6 @@
             border-radius: 10px;
             background-color: #f9f9f9;
         }
-
         input {
             width: 100%;
             padding: 12px;
@@ -41,7 +38,6 @@
             border: 1px solid #ccc;
             font-size: 16px;
         }
-
         .btn, .nav-btn {
             background-color: #8a1538;
             color: white;
@@ -57,11 +53,9 @@
             text-decoration: none;
             display: block;
         }
-
         .btn:hover, .nav-btn:hover {
             background-color: #6e0f2f;
         }
-
         .mensaje {
             margin: 20px auto;
             max-width: 600px;
@@ -70,17 +64,14 @@
             font-weight: bold;
             border-radius: 5px;
         }
-
         .success {
             background-color: #4CAF50;
             color: white;
         }
-
         .error {
             background-color: #f44336;
             color: white;
         }
-
         @media (max-width: 600px) {
             .titulo {
                 font-size: 22px;
@@ -105,7 +96,7 @@
   {% endif %}
 {% endwith %}
 
-<form method="POST" class="formulario">
+<form action="{{ url_for('crear_usuario') }}" method="POST" class="formulario">
     <input type="text" name="username" placeholder="Nombre de usuario" required>
     <input type="password" name="password" placeholder="Contraseña" required>
     <input type="number" name="folios" placeholder="Cantidad de folios" required>
@@ -113,9 +104,9 @@
 </form>
 
 <div class="formulario">
-    <a href="{{ url_for('admin') }}" class="nav-btn">Volver al Panel</a>
+    <a href="{{ url_for('panel') }}"       class="nav-btn">Volver al Panel</a>
     <a href="{{ url_for('consulta_folio') }}" class="nav-btn">Consultar Folio</a>
-    <a href="{{ url_for('logout') }}" class="nav-btn">Cerrar Sesión</a>
+    <a href="{{ url_for('logout') }}"      class="nav-btn">Cerrar Sesión</a>
 </div>
 
 <div class="img-intermedia">
