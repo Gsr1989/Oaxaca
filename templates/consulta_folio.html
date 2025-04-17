@@ -1,129 +1,30 @@
-<!-- templates/consulta_folio.html -->
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Consulta de Folio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #fff;
-        }
-
-        header img, .img-intermedia img, footer img {
-            width: 100%;
-            display: block;
-        }
-
-        .titulo {
-            font-size: 22px;
-            font-weight: bold;
-            color: #222;
-            padding: 20px 30px 10px 30px;
-            text-align: left;
-        }
-
-        main {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 0 30px 20px 30px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        button {
-            background-color: #8a1538;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            border: 2px solid #600f28;
-        }
-
-        button:hover {
-            background-color: #6e0f2f;
-        }
-
-        /* NUEVO: Estilos para la sección de resultados */
-        .resultado {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f2f2f2;
-            font-size: 16px;
-            color: #333;
-        }
-        .resultado h2 {
-            margin-top: 0;
-            font-size: 20px;
-            color: #8a1538;
-        }
-        .resultado p {
-            margin: 8px 0;
-        }
-
-        @media (max-width: 600px) {
-            .titulo {
-                font-size: 18px;
-                padding: 20px;
-            }
-            button {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
+<head><meta charset="UTF-8"><title>Consulta Folio</title></head>
 <body>
+<header><img src="{{ url_for('static','Oaxacaarriba.jpg') }}"></header>
+<div class="titulo">Consulta de Folio</div>
+<form method="POST" action="{{ url_for('consulta_folio') }}">
+  <input name="folio" placeholder="Tu Folio" required>
+  <button type="submit">Consultar</button>
+</form>
 
-    <header>
-        <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado">
-    </header>
+{% if resultado %}
+  <div>
+    <p>Folio: {{ resultado.folio }}</p>
+    <p>Estado: {{ resultado.estado }}</p>
+    {% if resultado.estado!='No encontrado' %}
+      <p>Expedición: {{ resultado.fecha_expedicion }}</p>
+      <p>Vencimiento: {{ resultado.fecha_vencimiento }}</p>
+      <p>Marca: {{ resultado.marca }}</p>
+      <p>Línea: {{ resultado.linea }}</p>
+      <p>Serie: {{ resultado.numero_serie }}</p>
+      <p>Motor: {{ resultado.numero_motor }}</p>
+    {% endif %}
+  </div>
+{% endif %}
 
-    <div class="titulo">INGRESA EL FOLIO PARA LA CONSULTA</div>
-
-    <main>
-        <form action="{{ url_for('consulta_folio') }}" method="POST">
-            <input type="text" name="folio" placeholder="Ingresa tu folio" required>
-            <button type="submit">Consultar</button>
-        </form>
-
-        {% if resultado %}
-            <div class="resultado">
-                <h2>Resultado de la Consulta</h2>
-                <p><strong>Folio:</strong> {{ resultado.folio }}</p>
-                <p><strong>Estado:</strong> {{ resultado.estado }}</p>
-                {% if resultado.estado != 'No encontrado' %}
-                    <p><strong>Fecha de Expedición:</strong> {{ resultado.fecha_expedicion }}</p>
-                    <p><strong>Fecha de Vencimiento:</strong> {{ resultado.fecha_vencimiento }}</p>
-                    <p><strong>Marca:</strong> {{ resultado.marca }}</p>
-                    <p><strong>Línea:</strong> {{ resultado.linea }}</p>
-                    <p><strong>Año:</strong> {{ resultado.año }}</p>
-                    <p><strong>Número de Serie:</strong> {{ resultado.numero_serie }}</p>
-                    <p><strong>Número de Motor:</strong> {{ resultado.numero_motor }}</p>
-                {% endif %}
-            </div>
-        {% endif %}
-    </main>
-
-    <div class="img-intermedia">
-        <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja intermedia">
-    </div>
-
-    <footer>
-        <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página">
-    </footer>
-
+<a href="{{ url_for('panel') }}">Volver al Panel</a>
+<footer><img src="{{ url_for('static','Masabajo.jpg') }}"></footer>
 </body>
 </html>
