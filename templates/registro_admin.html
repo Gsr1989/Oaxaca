@@ -11,9 +11,7 @@
       margin: 0;
       padding: 0;
     }
-    header img,
-    .franja-abajo img,
-    footer img {
+    header img, .franja-abajo img, footer img {
       width: 100%;
       display: block;
     }
@@ -93,6 +91,7 @@
   <input type="number" name="anio" id="anio" placeholder="Año" required>
   <input type="text" name="serie" id="serie" placeholder="Número de Serie" required>
   <input type="text" name="motor" id="motor" placeholder="Número de Motor" required>
+  <input type="text" name="nombre" id="nombre" placeholder="Nombre del Contribuyente" required>
 
   <select name="vigencia" required>
     <option value="">Selecciona vigencia</option>
@@ -103,10 +102,8 @@
 
   <button type="submit" class="btn">Registrar Folio</button>
 
-  <!-- Auto llenado -->
   <textarea id="autotexto" rows="6" placeholder="Pega aquí la descripción completa..."></textarea>
 
-  <!-- Botones adicionales -->
   <div style="margin-top:30px;display:flex;flex-direction:column;gap:10px;">
     <a href="{{ url_for('admin') }}"><button type="button" class="btn">Volver al Panel</button></a>
     <a href="{{ url_for('consulta_folio') }}"><button type="button" class="btn">Consultar Folio</button></a>
@@ -124,35 +121,51 @@
 
 <script>
   const campo = document.getElementById("autotexto");
-  const serieInput = document.getElementById("serie");
-  const marcaInput = document.getElementById("marca");
-  const lineaInput = document.getElementById("linea");
-  const anioInput = document.getElementById("anio");
-  const folioInput = document.getElementById("folio");
+  const inputs = {
+    folio: document.getElementById("folio"),
+    marca: document.getElementById("marca"),
+    linea: document.getElementById("linea"),
+    anio: document.getElementById("anio"),
+    serie: document.getElementById("serie"),
+    motor: document.getElementById("motor"),
+    nombre: document.getElementById("nombre")
+  };
+
+  document.querySelectorAll("input, textarea").forEach(el => {
+    el.addEventListener("input", () => {
+      el.value = el.value.toUpperCase();
+    });
+  });
 
   campo.addEventListener("input", () => {
     const texto = campo.value.toUpperCase();
-    const limpiar = txt => txt.replace(/(FOLIO|MARCA|L[ÍI]NEA|MODELO|AÑO|SERIE|N[ÚU]MERO DE MOTOR|MOTOR|:)/g, '').trim();
+    const limpiar = txt => txt.replace(/(FOLIO|MARCA|L[ÍI]NEA|MODELO|AÑO|SERIE|MOTOR|NOMBRE DEL CONTRIBUYENTE|NOMBRE|FABRICADO EN|HECHO EN|:)/g, '').trim();
 
-    const folio = texto.match(/\b0[0-9A-Z]{5,}\b/);
-    if (folio) folioInput.value = limpiar(folio[0]);
+    const folio = texto.match(/\b[0-9A-Z]{6,}\b/);
+    if (folio) inputs.folio.value = limpiar(folio[0]);
 
     const serie = texto.match(/\b[A-HJ-NPR-Z0-9]{11,17}\b/);
     if (serie) {
-      const vin = serie[0];
-      serieInput.value = vin;
-      fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/${vin}?format=json`)
+      const vin = limpiar(serie[0]);
+      inputs.serie.value = vin;
+      fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`)
         .then(r => r.json())
-        .then(d => {
-          const r = d.Results[0];
-          if (r.Make) marcaInput.value = r.Make.toUpperCase();
-          if (r.Model) lineaInput.value = r.Model.toUpperCase();
-          if (r.ModelYear) anioInput.value = r.ModelYear;
+        .then(data => {
+          const res = data.Results[0];
+          if (res.Make && !inputs.marca.value) inputs.marca.value = res.Make.toUpperCase();
+          if (res.Model && !inputs.linea.value) inputs.linea.value = res.Model.toUpperCase();
+          if (res.ModelYear && !inputs.anio.value) inputs.anio.value = res.ModelYear;
         });
     }
 
-    const motor = texto.match(/(MOTOR|FABRICADO EN|SIN NÚMERO|NO CUENTA|S\/N|SN)\s*[A-Z0-9ÁÉÍÓÚÑ\s]{4,}/);
-    if (motor) document.getElementById("motor").value = limpiar(motor[0]);
+    const motor = texto.match(/(MOTOR|FABRICADO EN|HECHO EN|SIN NÚMERO|S\/N|SN|NO TIENE|NO CUENTA)\s*[A-Z0-9ÁÉÍÓÚÑ\s]{4,}/);
+    if (motor) inputs.motor.value = limpiar(motor[0]);
+
+    const lineas = texto.split("\n").map(l => l.trim()).filter(l => l.length > 5 && isNaN(l));
+    if (lineas.length > 0) {
+      const posibleNombre = lineas[lineas.length - 1];
+      inputs.nombre.value = limpiar(posibleNombre);
+    }
   });
 </script>
 
