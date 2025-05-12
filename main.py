@@ -11,6 +11,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
 
+# Supabase
 SUPABASE_URL = "https://xsagwqepoljfsogusubw.supabase.co"
 SUPABASE_KEY = (
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
@@ -18,6 +19,9 @@ SUPABASE_KEY = (
     "ImV4cCI6MjA1OTUzOTc1NX0.NUixULn0m2o49At8j6X58UqbXre2O2_JStqzls_8Gws"
 )
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# ENTIDAD FIJA PARA OAXACA
+ENTIDAD = "oaxaca"
 
 os.makedirs("documentos", exist_ok=True)
 
@@ -119,14 +123,15 @@ def registro_usuario():
 
         hoy = datetime.now(tz=ZoneInfo("America/Mexico_City"))
         supabase.table("folios_registrados").insert({
-            "folio":            folio,
-            "marca":            request.form['marca'],
-            "linea":            request.form['linea'],
-            "anio":             request.form['anio'],
-            "numero_serie":     numero_serie,
-            "numero_motor":     request.form['motor'],
-            "fecha_expedicion": hoy.isoformat(),
-            "fecha_vencimiento": (hoy + timedelta(days=vigencia)).isoformat()
+            "folio":             folio,
+            "marca":             request.form['marca'],
+            "linea":             request.form['linea'],
+            "anio":              request.form['anio'],
+            "numero_serie":      numero_serie,
+            "numero_motor":      request.form['motor'],
+            "fecha_expedicion":  hoy.isoformat(),
+            "fecha_vencimiento": (hoy + timedelta(days=vigencia)).isoformat(),
+            "entidad":           ENTIDAD
         }).execute()
 
         supabase.table("verificaciondigitalcdmx").update({
@@ -157,14 +162,15 @@ def registro_admin():
 
         hoy = datetime.now(tz=ZoneInfo("America/Mexico_City"))
         supabase.table("folios_registrados").insert({
-            "folio":            folio,
-            "marca":            request.form['marca'],
-            "linea":            request.form['linea'],
-            "anio":             request.form['anio'],
-            "numero_serie":     numero_serie,
-            "numero_motor":     request.form['motor'],
-            "fecha_expedicion": hoy.isoformat(),
-            "fecha_vencimiento": (hoy + timedelta(days=vigencia)).isoformat()
+            "folio":             folio,
+            "marca":             request.form['marca'],
+            "linea":             request.form['linea'],
+            "anio":              request.form['anio'],
+            "numero_serie":      numero_serie,
+            "numero_motor":      request.form['motor'],
+            "fecha_expedicion":  hoy.isoformat(),
+            "fecha_vencimiento": (hoy + timedelta(days=vigencia)).isoformat(),
+            "entidad":           ENTIDAD
         }).execute()
 
         return send_file(generar_pdf(folio, numero_serie), as_attachment=True)
@@ -197,11 +203,12 @@ def consulta_folio():
                 "folio":  folio,
                 "fecha_expedicion":  f_exp.strftime("%d/%m/%Y"),
                 "fecha_vencimiento": f_ven.strftime("%d/%m/%Y"),
-                "marca":  r['marca'],
-                "linea":  r['linea'],
-                "año":    r['anio'],
-                "numero_serie":  r['numero_serie'],
-                "numero_motor":  r['numero_motor']
+                "marca":    r['marca'],
+                "linea":    r['linea'],
+                "año":      r['anio'],
+                "numero_serie": r['numero_serie'],
+                "numero_motor": r['numero_motor'],
+                "entidad":      r.get('entidad', '')
             }
         return render_template("resultado_consulta.html", resultado=resultado)
     return render_template("consulta_folio.html")
@@ -260,7 +267,8 @@ def editar_folio(folio):
             "numero_serie":     request.form['numero_serie'],
             "numero_motor":     request.form['numero_motor'],
             "fecha_expedicion": request.form['fecha_expedicion'],
-            "fecha_vencimiento":request.form['fecha_vencimiento']
+            "fecha_vencimiento":request.form['fecha_vencimiento'],
+            "entidad":          ENTIDAD
         }).eq("folio", folio).execute()
         flash("Folio actualizado.", "success")
         return redirect(url_for('admin_folios'))
@@ -282,6 +290,10 @@ def eliminar_folio():
     supabase.table("folios_registrados").delete().eq("folio", folio).execute()
     flash("Folio eliminado.", "success")
     return redirect(url_for('admin_folios'))
+
+@app.route('/descargar_pdf/<folio>')
+def descargar_pdf(folio):
+    return send_file(f"documentos/{folio}.pdf", as_attachment=True)
 
 @app.route('/logout')
 def logout():
