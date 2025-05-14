@@ -17,10 +17,8 @@ SUPABASE_KEY = (
 )
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ENTIDAD FIJA
 ENTIDAD = "oaxaca"
 
-# Directorio para PDFs
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOCS_DIR = os.path.join(BASE_DIR, "documentos")
 os.makedirs(DOCS_DIR, exist_ok=True)
@@ -103,7 +101,6 @@ def registro_usuario():
         serie = request.form['serie']
         motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
-        # validar duplicado
         if supabase.table("folios_registrados").select("folio") \
                    .eq("folio", folio).execute().data:
             flash("Folio ya existe.", "error")
@@ -152,7 +149,6 @@ def registro_admin():
         serie = request.form['serie']
         motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
-        # validar duplicado
         if supabase.table("folios_registrados").select("folio") \
                    .eq("folio", folio).execute().data:
             flash("Folio ya existe.", "error")
@@ -192,7 +188,7 @@ def consulta_folio():
         folio = request.form['folio']
         row   = supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data
         if not row:
-            resultado = {"estado":"No encontrado","folio":folio}
+            resultado = {"estado": "NO SE ENCUENTRA REGISTRADO", "folio": folio}
         else:
             r  = row[0]
             fe = datetime.fromisoformat(r['fecha_expedicion'])
@@ -206,8 +202,8 @@ def consulta_folio():
                 "marca": r['marca'],
                 "linea": r['linea'],
                 "año": r['anio'],
-                "serie": r['numero_serie'],
-                "motor": r['numero_motor'],
+                "numero_serie": r['numero_serie'],
+                "numero_motor": r['numero_motor'],
                 "entidad": r.get('entidad','')
             }
         return render_template("resultado_consulta.html", resultado=resultado)
@@ -261,5 +257,5 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-if __name__=='__main__':
+if __name__ == '__main__':
     app.run(debug=True)
