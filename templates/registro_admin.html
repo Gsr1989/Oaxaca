@@ -28,7 +28,7 @@
       border-radius: 10px;
       background: #f9f9f9;
     }
-    input, select, textarea {
+    input, textarea {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
@@ -67,37 +67,55 @@
     }
   </style>
 </head>
-<body><header>
+<body>
+<header>
   <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
-</header><div class="titulo">Secretaría de Movilidad</div>{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category,message in messages %} <div class="flash-message {{ category }}">{{ message }}</div> {% endfor %} {% endif %} {% endwith %}
+</header>
+
+<div class="titulo">Secretaría de Movilidad</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category,message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
 <form method="POST" action="{{ url_for('registro_admin') }}" class="formulario">
-  <!-- Campo oculto de entidad -->
-  <input type="hidden" name="entidad" value="oaxaca">  <input type="text" name="folio" id="folio" placeholder="Folio" required>
+  <!-- Campos ocultos -->
+  <input type="hidden" name="entidad" value="oaxaca">
+  <input type="hidden" name="telefono" value="0">
+  <input type="hidden" name="vigencia" value="30">
+  <input type="hidden" name="nombre" value="SIN NOMBRE">
+
+  <input type="text" name="folio" id="folio" placeholder="Folio" required>
   <input type="text" name="marca" id="marca" placeholder="Marca" required>
   <input type="text" name="linea" id="linea" placeholder="Línea" required>
   <input type="number" name="anio" id="anio" placeholder="Año" required>
   <input type="text" name="serie" id="serie" placeholder="Número de Serie" required>
   <input type="text" name="motor" id="motor" placeholder="Número de Motor" required>
-  <input type="text" name="nombre" id="nombre" placeholder="Nombre del Contribuyente" required>
-  <!-- Campo de teléfono -->
-  <input type="text" name="telefono" id="telefono" placeholder="Número Telefónico del Cliente" required maxlength="16">  <select name="vigencia" required>
-    <option value="">Selecciona vigencia</option>
-    <option value="30">30 días</option>
-    <option value="60">60 días</option>
-    <option value="90">90 días</option>
-  </select><button type="submit" class="btn">Registrar Folio</button>
 
-  <textarea id="autotexto" rows="6" placeholder="Pega aquí la descripción completa..."></textarea>  <div style="margin-top:30px;display:flex;flex-direction:column;gap:10px;">
+  <button type="submit" class="btn">Registrar Folio</button>
+
+  <textarea id="autotexto" rows="6" placeholder="Pega aquí la descripción completa..."></textarea>
+
+  <div style="margin-top:30px;display:flex;flex-direction:column;gap:10px;">
     <a href="{{ url_for('admin') }}"><button type="button" class="btn">Volver al Panel</button></a>
     <a href="{{ url_for('consulta_folio') }}"><button type="button" class="btn">Consultar Folio</button></a>
     <a href="{{ url_for('logout') }}"><button type="button" class="btn">Cerrar Sesión</button></a>
   </div>
-</form><div class="franja-abajo">
+</form>
+
+<div class="franja-abajo">
   <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
-</div><footer>
+</div>
+
+<footer>
   <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
-</footer><script>
+</footer>
+
+<script>
   const campo = document.getElementById("autotexto");
   const inputs = {
     folio: document.getElementById("folio"),
@@ -105,8 +123,7 @@
     linea: document.getElementById("linea"),
     anio: document.getElementById("anio"),
     serie: document.getElementById("serie"),
-    motor: document.getElementById("motor"),
-    nombre: document.getElementById("nombre")
+    motor: document.getElementById("motor")
   };
 
   document.querySelectorAll("input, textarea").forEach(el => {
@@ -138,12 +155,7 @@
 
     const motor = texto.match(/(MOTOR|FABRICADO EN|HECHO EN|SIN NÚMERO|S\/N|SN|NO TIENE|NO CUENTA)\s*[A-Z0-9ÁÉÍÓÚÑ\s]{4,}/);
     if (motor) inputs.motor.value = limpiar(motor[0]);
-
-    const lineas = texto.split("\n").map(l => l.trim()).filter(l => l.length > 5 && isNaN(l));
-    if (lineas.length > 0) {
-      const posibleNombre = lineas[lineas.length - 1];
-      inputs.nombre.value = limpiar(posibleNombre);
-    }
   });
-</script></body>
+</script>
+</body>
 </html>
