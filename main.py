@@ -250,55 +250,35 @@ def logout():
 
 @app.route('/consulta/<folio>')
 def consulta_folio_directo(folio):
-    """Ruta para QR dinámicos - muestra directamente el folio"""
+    """Ruta para QR dinámicos con el diseño original"""
     
     row = supabase.table("folios_registrados").select("*").eq("folio", folio).eq("entidad", ENTIDAD).execute().data
     
     if not row:
-        return f"""<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Folio No Encontrado</title></head>
-<body style="font-family:Arial;text-align:center;padding:50px;background:#f5f5f5">
-<h1>Folio {folio} no encontrado</h1>
-<p>El folio no está registrado en el sistema de Oaxaca.</p>
-<a href="/consulta_folio" style="color:#007bff">Consultar otro folio</a>
-</body></html>"""
+        return render_template("resultado_consulta.html", resultado={
+            "estado": "NO SE ENCUENTRA REGISTRADO",
+            "folio": folio
+        })
     
     r = row[0]
     fe = datetime.fromisoformat(r['fecha_expedicion'])
     fv = datetime.fromisoformat(r['fecha_vencimiento'])
     estado = "VIGENTE" if datetime.now() <= fv else "VENCIDO"
-    color = "#28a745" if estado == "VIGENTE" else "#dc3545"
     
-    return f"""<!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Folio {folio}</title>
-<style>
-body{{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px}}
-.header{{text-align:center;background:white;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-bottom:20px}}
-.estado{{background:{color};color:white;padding:15px;text-align:center;font-size:1.2em;font-weight:bold;border-radius:10px;margin:20px 0}}
-.info-box{{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}}
-.info{{margin:15px 0;padding:10px 0;border-bottom:1px solid #eee}}
-.label{{font-weight:bold;color:#333;font-size:0.9em}}
-.value{{color:#666;margin-top:5px}}
-.footer{{text-align:center;margin-top:20px;color:#666;font-size:0.85em}}
-</style></head><body>
-<div class="header">
-<h1>Secretaría de Movilidad</h1>
-<h2>Gobierno del Estado de Oaxaca</h2>
-</div>
-<div class="estado">FOLIO {folio} : {estado}</div>
-<div class="info-box">
-<div class="info"><div class="label">FECHA DE EXPEDICIÓN</div><div class="value">{fe.strftime('%d/%m/%Y')}</div></div>
-<div class="info"><div class="label">FECHA DE VENCIMIENTO</div><div class="value">{fv.strftime('%d/%m/%Y')}</div></div>
-<div class="info"><div class="label">MARCA</div><div class="value">{r['marca']}</div></div>
-<div class="info"><div class="label">LÍNEA</div><div class="value">{r['linea']}</div></div>
-<div class="info"><div class="label">AÑO</div><div class="value">{r['anio']}</div></div>
-<div class="info"><div class="label">NÚMERO DE SERIE</div><div class="value">{r['numero_serie']}</div></div>
-<div class="info"><div class="label">NÚMERO DE MOTOR</div><div class="value">{r['numero_motor']}</div></div>
-</div>
-<div class="footer">DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO</div>
-</body></html>"""
-
+    resultado = {
+        "estado": estado,
+        "folio": folio,
+        "fecha_expedicion": fe.strftime("%d/%m/%Y"),
+        "fecha_vencimiento": fv.strftime("%d/%m/%Y"),
+        "marca": r['marca'],
+        "linea": r['linea'],
+        "año": r['anio'],
+        "numero_serie": r['numero_serie'],
+        "numero_motor": r['numero_motor'],
+        "entidad": r.get('entidad', '')
+    }
+    
+    return render_template("resultado_consulta.html", resultado=resultado)
+    
 if __name__ == '__main__':
     app.run(debug=True)
