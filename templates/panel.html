@@ -1,9 +1,8 @@
-<!-- templates/panel.html  – versión Oaxaca -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración</title>
+    <title>Panel de Administración - Oaxaca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body{
@@ -12,7 +11,6 @@
             margin:0;
             padding:0;
         }
-        /* Banners */
         header img,
         .franja-abajo img,
         footer img{
@@ -27,55 +25,135 @@
             font-weight:bold;
             color:#222;
         }
-        .botones{
-            display:flex;
-            justify-content:center;
-            gap:15px;
-            margin:30px auto;
-            flex-wrap:wrap;
-            max-width:600px;
+        
+        .subtitulo{
+            text-align:center;
+            font-size:18px;
+            color:#666;
+            margin-bottom:30px;
         }
-        .btn{
-            background:#8a1538;
+        
+        .panel-grid{
+            max-width:900px;
+            margin:30px auto;
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+            gap:20px;
+            padding:0 20px;
+        }
+        
+        .panel-card{
+            background:#f9f9f9;
+            border-radius:15px;
+            padding:25px;
+            text-align:center;
+            box-shadow:0 5px 15px rgba(0,0,0,0.1);
+            transition:transform 0.3s ease, box-shadow 0.3s ease;
+            cursor:pointer;
+            text-decoration:none;
+            color:#222;
+        }
+        
+        .panel-card:hover{
+            transform:translateY(-5px);
+            box-shadow:0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .panel-card .icono{
+            font-size:50px;
+            margin-bottom:15px;
+        }
+        
+        .panel-card h3{
+            margin:10px 0;
+            font-size:18px;
+            color:#8a1538;
+        }
+        
+        .panel-card p{
+            margin:5px 0;
+            font-size:14px;
+            color:#666;
+        }
+        
+        .btn-logout{
+            display:block;
+            max-width:300px;
+            margin:30px auto;
+            background:#dc3545;
             color:#fff;
             border:none;
             padding:14px 22px;
             font-size:16px;
-            border-radius:6px;
+            border-radius:8px;
             cursor:pointer;
             transition:background .3s ease;
+            text-decoration:none;
+            text-align:center;
+            font-weight:bold;
         }
-        .btn:hover{background:#6e0f2f;}
+        .btn-logout:hover{
+            background:#c82333;
+        }
 
         @media(max-width:600px){
             .titulo{font-size:24px;margin-top:20px;}
-            .btn{width:100%;text-align:center;}
+            .panel-grid{
+                grid-template-columns:1fr;
+                padding:0 15px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Encabezado Oaxaca -->
     <header>
         <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
     </header>
 
-    <div class="titulo">Secretaría de Movilidad</div>
+    <div class="titulo">Panel de Administración</div>
+    <div class="subtitulo">Secretaría de Movilidad - Oaxaca</div>
 
-    <div class="botones">
-        <a href="{{ url_for('registro_admin') }}"><button class="btn">Registrar Folio</button></a>
-        <a href="{{ url_for('consulta_folio') }}"><button class="btn">Consultar Folio</button></a>
-        <a href="{{ url_for('crear_usuario') }}"><button class="btn">Crear Usuario</button></a>
-        <a href="{{ url_for('admin_folios') }}"><button class="btn">Ver Todos los Folios</button></a>
-        <a href="{{ url_for('logout') }}"><button class="btn">Cerrar Sesión</button></a>
+    <div class="panel-grid">
+        
+        <a href="{{ url_for('registro_admin') }}" class="panel-card">
+            <div class="icono">📝</div>
+            <h3>Registrar Folio</h3>
+            <p>Generar nuevo permiso con folio personalizado o automático</p>
+        </a>
+
+        <a href="{{ url_for('admin_folios') }}" class="panel-card">
+            <div class="icono">📋</div>
+            <h3>Ver Todos los Folios</h3>
+            <p>Búsqueda, edición y eliminación de permisos</p>
+        </a>
+
+        <a href="{{ url_for('crear_usuario') }}" class="panel-card">
+            <div class="icono">👤</div>
+            <h3>Crear Usuario</h3>
+            <p>Agregar nuevos usuarios con folios asignados</p>
+        </a>
+
+        <a href="{{ url_for('admin_tablas') }}" class="panel-card">
+            <div class="icono">🗄️</div>
+            <h3>Administrar Tablas BD</h3>
+            <p>Ver y editar todas las tablas de Supabase</p>
+        </a>
+
+        <a href="{{ url_for('consulta_folio') }}" class="panel-card">
+            <div class="icono">🔍</div>
+            <h3>Consultar Folio</h3>
+            <p>Verificar estado y datos de permisos</p>
+        </a>
+
     </div>
 
-    <!-- Franja Oaxacaabajo pegada al pie -->
+    <a href="{{ url_for('logout') }}" class="btn-logout">🚪 Cerrar Sesión</a>
+
     <div class="franja-abajo">
         <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
     </div>
 
-    <!-- Pie Masabajo -->
     <footer>
         <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
     </footer>
