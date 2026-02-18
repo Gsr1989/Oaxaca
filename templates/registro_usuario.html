@@ -1,9 +1,8 @@
-<!-- templates/registro_usuario.html (versión Oaxaca) -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Folio</title>
+    <title>Registro de Folio - Oaxaca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body{
@@ -12,7 +11,6 @@
             margin:0;
             padding:0;
         }
-        /* Banners Oaxaca */
         header img,
         .franja-abajo img,
         footer img{
@@ -27,26 +25,86 @@
             font-weight:bold;
             color:#222;
         }
-        .info-folios{
+        
+        /* Contador de folios estilo moderno */
+        .contador-folios{
+            max-width:600px;
+            margin:20px auto;
+            display:flex;
+            justify-content:space-around;
+            gap:15px;
+            flex-wrap:wrap;
+        }
+        .folio-card{
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            color:white;
+            padding:20px;
+            border-radius:15px;
             text-align:center;
-            margin-top:10px;
-            font-size:18px;
+            flex:1;
+            min-width:150px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.2);
+        }
+        .folio-card h3{
+            font-size:14px;
+            margin:0 0 10px 0;
+            opacity:0.9;
+        }
+        .folio-card .numero{
+            font-size:32px;
+            font-weight:bold;
+        }
+
+        /* Barra de progreso */
+        .progress-container{
+            max-width:600px;
+            margin:10px auto 30px;
+            padding:0 20px;
+        }
+        .progress-bar{
+            width:100%;
+            height:25px;
+            background:#e0e0e0;
+            border-radius:15px;
+            overflow:hidden;
+            position:relative;
+        }
+        .progress-fill{
+            height:100%;
+            background:linear-gradient(90deg,#4CAF50 0%,#81C784 100%);
+            transition:width 0.3s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            font-weight:bold;
+            font-size:14px;
         }
 
         .formulario{
             max-width:600px;
             margin:30px auto;
-            padding:20px;
+            padding:25px;
             border-radius:10px;
             background:#f9f9f9;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+        }
+        .campo{
+            margin-bottom:15px;
+        }
+        .campo label{
+            display:block;
+            font-weight:bold;
+            margin-bottom:5px;
+            color:#333;
         }
         input,select{
             width:100%;
             padding:12px;
-            margin:10px 0;
             border-radius:6px;
             border:1px solid #ccc;
             font-size:16px;
+            box-sizing:border-box;
         }
         .btn{
             background:#8a1538;
@@ -59,16 +117,17 @@
             transition:background .3s ease;
             width:100%;
             margin-top:15px;
+            font-weight:bold;
         }
         .btn:hover{background:#6e0f2f;}
 
         .mensaje{
             margin:20px auto;
             max-width:600px;
-            padding:10px;
+            padding:12px;
             text-align:center;
             font-weight:bold;
-            border-radius:5px;
+            border-radius:8px;
         }
         .success{background:#4CAF50;color:#fff;}
         .error{background:#f44336;color:#fff;}
@@ -78,6 +137,7 @@
             justify-content:center;
             gap:10px;
             margin:20px 0 30px;
+            flex-wrap:wrap;
         }
         .botones-acciones a{
             background:#8a1538;
@@ -92,22 +152,42 @@
 
         @media(max-width:600px){
             .titulo{font-size:24px;}
+            .contador-folios{flex-direction:column;}
+            .folio-card{min-width:auto;}
         }
     </style>
 </head>
 <body>
 
-    <!-- Encabezado Oaxaca -->
     <header>
         <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
     </header>
 
-    <div class="titulo">Secretaría de Movilidad</div>
+    <div class="titulo">Secretaría de Movilidad - Oaxaca</div>
 
-    <div class="info-folios">
-        <p>Folios asignados: <strong>{{ folios_info.folios_asignac }}</strong></p>
-        <p>Folios usados: <strong>{{ folios_info.folios_usados }}</strong></p>
-        <p>Folios restantes: <strong>{{ folios_info.folios_asignac - folios_info.folios_usados }}</strong></p>
+    <!-- CONTADOR DE FOLIOS -->
+    <div class="contador-folios">
+        <div class="folio-card">
+            <h3>FOLIOS ASIGNADOS</h3>
+            <div class="numero">{{ folios_asignados }}</div>
+        </div>
+        <div class="folio-card">
+            <h3>FOLIOS USADOS</h3>
+            <div class="numero">{{ folios_usados }}</div>
+        </div>
+        <div class="folio-card">
+            <h3>DISPONIBLES</h3>
+            <div class="numero">{{ folios_disponibles }}</div>
+        </div>
+    </div>
+
+    <!-- BARRA DE PROGRESO -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ porcentaje }}%">
+                {{ "%.1f"|format(porcentaje) }}% usado
+            </div>
+        </div>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -119,34 +199,59 @@
     {% endwith %}
 
     <form method="POST" class="formulario">
-        <input type="text" name="folio" placeholder="Folio" required>
-        <input type="text" name="marca" placeholder="Marca" required>
-        <input type="text" name="linea" placeholder="Línea" required>
-        <input type="number" name="anio" placeholder="Año" required>
-        <input type="text" name="serie" placeholder="Número de Serie" required>
-        <input type="text" name="motor" placeholder="Número de Motor" required>
+        <div class="campo">
+            <label for="marca">Marca del Vehículo:</label>
+            <input type="text" id="marca" name="marca" placeholder="Ej: NISSAN" required>
+        </div>
 
-        <select name="vigencia" required>
-            <option value="">Selecciona vigencia</option>
-            <option value="30">30 días</option>
-            <option value="60">60 días</option>
-            <option value="90">90 días</option>
-        </select>
+        <div class="campo">
+            <label for="linea">Línea del Vehículo:</label>
+            <input type="text" id="linea" name="linea" placeholder="Ej: SENTRA" required>
+        </div>
 
-        <button type="submit" class="btn">Registrar Folio</button>
+        <div class="campo">
+            <label for="anio">Año del Vehículo:</label>
+            <input type="number" id="anio" name="anio" placeholder="Ej: 2020" min="1900" max="2099" required>
+        </div>
+
+        <div class="campo">
+            <label for="serie">Número de Serie (VIN):</label>
+            <input type="text" id="serie" name="serie" placeholder="Ej: 3N1AB7AP0KY123456" required>
+        </div>
+
+        <div class="campo">
+            <label for="motor">Número de Motor:</label>
+            <input type="text" id="motor" name="motor" placeholder="Ej: HR16DE123456" required>
+        </div>
+
+        <div class="campo">
+            <label for="color">Color del Vehículo:</label>
+            <input type="text" id="color" name="color" placeholder="Ej: ROJO" required>
+        </div>
+
+        <div class="campo">
+            <label for="nombre">Nombre Completo del Titular:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: JUAN PÉREZ LÓPEZ" required>
+        </div>
+
+        <div class="campo">
+            <label for="fecha_inicio">Fecha de Expedición:</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+        </div>
+
+        <button type="submit" class="btn">🚗 Generar Permiso (30 días)</button>
     </form>
 
     <div class="botones-acciones">
-        <a href="{{ url_for('consulta_folio') }}">Consultar Folio</a>
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('mis_permisos') }}">📋 Mis Permisos</a>
+        <a href="{{ url_for('consulta_folio') }}">🔍 Consultar Folio</a>
+        <a href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a>
     </div>
 
-    <!-- Franja Oaxacaabajo pegada al pie -->
     <div class="franja-abajo">
         <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
     </div>
 
-    <!-- Pie de página Masabajo.jpg -->
     <footer>
         <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
     </footer>
