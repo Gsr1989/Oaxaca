@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Resultado de Consulta</title>
+    <title>Resultado de Consulta - Oaxaca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
@@ -122,7 +122,7 @@
     <div class="titulo">Secretaría de Movilidad</div>
     <div class="subtitulo">Gobierno del Estado de Oaxaca</div>
 
-    {% if resultado.estado == "NO SE ENCUENTRA REGISTRADO" %}
+    {% if resultado.estado == "NO REGISTRADO" or resultado.estado == "NO SE ENCUENTRA REGISTRADO" %}
         <div class="estado no-encontrado">
             FOLIO {{ resultado.folio }} : NO SE ENCUENTRA REGISTRADO
         </div>
@@ -136,7 +136,7 @@
         </div>
     {% endif %}
 
-    {% if resultado.estado != "NO SE ENCUENTRA REGISTRADO" %}
+    {% if resultado.estado != "NO REGISTRADO" and resultado.estado != "NO SE ENCUENTRA REGISTRADO" %}
     <div class="certificado">
         <div class="recuadro-interno">
             <div class="dato"><strong>FECHA DE EXPEDICIÓN</strong>{{ resultado.fecha_expedicion }}</div>
@@ -146,6 +146,9 @@
             <div class="dato"><strong>AÑO</strong>{{ resultado.año }}</div>
             <div class="dato"><strong>NÚMERO DE SERIE</strong>{{ resultado.numero_serie }}</div>
             <div class="dato"><strong>NÚMERO DE MOTOR</strong>{{ resultado.numero_motor }}</div>
+            {% if resultado.color %}
+            <div class="dato"><strong>COLOR</strong>{{ resultado.color }}</div>
+            {% endif %}
         </div>
     </div>
     {% endif %}
