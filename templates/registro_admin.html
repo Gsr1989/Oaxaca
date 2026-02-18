@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Registro de Folio (Admin)</title>
+  <title>Registro de Folio (Admin) - Oaxaca</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -22,21 +22,64 @@
       font-weight: bold;
       color: #222;
     }
+    .subtitulo {
+      text-align: center;
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 20px;
+    }
     .formulario {
       max-width: 600px;
       margin: 30px auto;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 25px;
+      border-radius: 15px;
       background: #f9f9f9;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .info-box {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    .info-box h4 {
+      margin: 0 0 10px 0;
+      color: #856404;
+    }
+    .info-box p {
+      margin: 5px 0;
+      color: #856404;
+      font-size: 14px;
+    }
+    .campo {
+      margin-bottom: 15px;
+    }
+    .campo label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    .campo small {
+      display: block;
+      color: #666;
+      font-size: 13px;
+      margin-top: 3px;
     }
     input, textarea {
       width: 100%;
       padding: 12px;
-      margin: 10px 0;
       border-radius: 6px;
-      border: 1px solid #ccc;
+      border: 2px solid #ddd;
       font-size: 16px;
       text-transform: uppercase;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #8a1538;
     }
     .btn {
       background: #8a1538;
@@ -48,21 +91,28 @@
       cursor: pointer;
       transition: background 0.3s ease;
       width: 100%;
-      margin-top: 15px;
+      margin-top: 10px;
+      font-weight: bold;
     }
     .btn:hover { background: #6e0f2f; }
+    .btn-secundario {
+      background: #6c757d;
+    }
+    .btn-secundario:hover {
+      background: #5a6268;
+    }
     .flash-message {
-      padding: 10px;
+      padding: 15px;
       margin: 15px auto;
       width: 90%;
       max-width: 600px;
-      border-radius: 5px;
+      border-radius: 8px;
       color: #fff;
       font-weight: bold;
       text-align: center;
     }
-    .success { background: green; }
-    .error { background: red; }
+    .success { background: #4CAF50; }
+    .error { background: #f44336; }
     @media(max-width:600px){
       .titulo { font-size: 24px; margin-top: 20px; }
     }
@@ -73,7 +123,8 @@
   <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
 </header>
 
-<div class="titulo">Secretaría de Movilidad</div>
+<div class="titulo">Registro de Folio (Administrador)</div>
+<div class="subtitulo">Secretaría de Movilidad - Oaxaca</div>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -84,27 +135,71 @@
 {% endwith %}
 
 <form method="POST" action="{{ url_for('registro_admin') }}" class="formulario">
-  <!-- Campos ocultos -->
-  <input type="hidden" name="entidad" value="oaxaca">
-  <input type="hidden" name="telefono" value="0">
-  <input type="hidden" name="vigencia" value="30">
-  <input type="hidden" name="nombre" value="SIN NOMBRE">
+  
+  <div class="info-box">
+    <h4>⚙️ Modo Administrador</h4>
+    <p><strong>Folio personalizado:</strong> Puedes escribir el folio que quieras (ej: 11234)</p>
+    <p><strong>Folio automático:</strong> Deja el campo vacío y se generará automáticamente</p>
+  </div>
 
-  <input type="text" name="folio" id="folio" placeholder="Folio" required>
-  <input type="text" name="marca" id="marca" placeholder="Marca" required>
-  <input type="text" name="linea" id="linea" placeholder="Línea" required>
-  <input type="number" name="anio" id="anio" placeholder="Año" required>
-  <input type="text" name="serie" id="serie" placeholder="Número de Serie" required>
-  <input type="text" name="motor" id="motor" placeholder="Número de Motor" required>
+  <div class="campo">
+    <label for="folio">🎟️ Folio (Opcional):</label>
+    <input type="text" name="folio" id="folio" placeholder="Dejar vacío para auto-generar">
+    <small>Si lo dejas vacío, se generará automáticamente con prefijo 1</small>
+  </div>
 
-  <button type="submit" class="btn">Registrar Folio</button>
+  <div class="campo">
+    <label for="marca">🚗 Marca:</label>
+    <input type="text" name="marca" id="marca" placeholder="Ej: NISSAN" required>
+  </div>
 
-  <textarea id="autotexto" rows="6" placeholder="Pega aquí la descripción completa..."></textarea>
+  <div class="campo">
+    <label for="linea">🏷️ Línea:</label>
+    <input type="text" name="linea" id="linea" placeholder="Ej: SENTRA" required>
+  </div>
 
-  <div style="margin-top:30px;display:flex;flex-direction:column;gap:10px;">
-    <a href="{{ url_for('admin') }}"><button type="button" class="btn">Volver al Panel</button></a>
-    <a href="{{ url_for('consulta_folio') }}"><button type="button" class="btn">Consultar Folio</button></a>
-    <a href="{{ url_for('logout') }}"><button type="button" class="btn">Cerrar Sesión</button></a>
+  <div class="campo">
+    <label for="anio">📅 Año:</label>
+    <input type="number" name="anio" id="anio" placeholder="Ej: 2020" min="1900" max="2099" required>
+  </div>
+
+  <div class="campo">
+    <label for="serie">🔢 Número de Serie (VIN):</label>
+    <input type="text" name="serie" id="serie" placeholder="Ej: 3N1AB7AP0KY123456" required>
+  </div>
+
+  <div class="campo">
+    <label for="motor">⚙️ Número de Motor:</label>
+    <input type="text" name="motor" id="motor" placeholder="Ej: HR16DE123456" required>
+  </div>
+
+  <div class="campo">
+    <label for="color">🎨 Color del Vehículo:</label>
+    <input type="text" name="color" id="color" placeholder="Ej: ROJO" required>
+  </div>
+
+  <div class="campo">
+    <label for="nombre">👤 Nombre del Titular:</label>
+    <input type="text" name="nombre" id="nombre" placeholder="Ej: JUAN PÉREZ LÓPEZ" required>
+  </div>
+
+  <div class="campo">
+    <label for="fecha_inicio">📆 Fecha de Expedición:</label>
+    <input type="date" name="fecha_inicio" id="fecha_inicio" required>
+  </div>
+
+  <button type="submit" class="btn">✅ Registrar Folio (30 días)</button>
+
+  <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+
+  <div class="campo">
+    <label for="autotexto">📋 Autocompletar desde Texto:</label>
+    <textarea id="autotexto" rows="6" placeholder="Pega aquí la descripción completa del vehículo y se rellenarán los campos automáticamente..."></textarea>
+    <small>Funciona con descripciones que incluyan folio, marca, serie, motor, etc.</small>
+  </div>
+
+  <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px;">
+    <a href="{{ url_for('admin') }}"><button type="button" class="btn btn-secundario">← Volver al Panel</button></a>
   </div>
 </form>
 
@@ -124,39 +219,73 @@
     linea: document.getElementById("linea"),
     anio: document.getElementById("anio"),
     serie: document.getElementById("serie"),
-    motor: document.getElementById("motor")
+    motor: document.getElementById("motor"),
+    color: document.getElementById("color"),
+    nombre: document.getElementById("nombre")
   };
 
+  // Convertir todo a mayúsculas
   document.querySelectorAll("input, textarea").forEach(el => {
     el.addEventListener("input", () => {
       el.value = el.value.toUpperCase();
     });
   });
 
+  // Autocompletar desde textarea
   campo.addEventListener("input", () => {
     const texto = campo.value.toUpperCase();
-    const limpiar = txt => txt.replace(/(FOLIO|MARCA|L[ÍI]NEA|MODELO|AÑO|SERIE|MOTOR|NOMBRE DEL CONTRIBUYENTE|NOMBRE|FABRICADO EN|HECHO EN|:)/g, '').trim();
+    const limpiar = txt => txt.replace(/(FOLIO|MARCA|L[ÍI]NEA|MODELO|AÑO|SERIE|MOTOR|COLOR|NOMBRE DEL CONTRIBUYENTE|NOMBRE|FABRICADO EN|HECHO EN|:)/g, '').trim();
 
+    // Extraer folio (números y letras, 6+ caracteres)
     const folio = texto.match(/\b[0-9A-Z]{6,}\b/);
     if (folio) inputs.folio.value = limpiar(folio[0]);
 
+    // Extraer VIN (11-17 caracteres alfanuméricos)
     const serie = texto.match(/\b[A-HJ-NPR-Z0-9]{11,17}\b/);
     if (serie) {
       const vin = limpiar(serie[0]);
       inputs.serie.value = vin;
+      
+      // API de NHTSA para autocompletar marca/modelo/año
       fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vin}?format=json`)
         .then(r => r.json())
         .then(data => {
-          const res = data.Results[0];
-          if (res.Make && !inputs.marca.value) inputs.marca.value = res.Make.toUpperCase();
-          if (res.Model && !inputs.linea.value) inputs.linea.value = res.Model.toUpperCase();
-          if (res.ModelYear && !inputs.anio.value) inputs.anio.value = res.ModelYear;
-        });
+          const res = data.Results;
+          const getMake = res.find(x => x.Variable === "Make");
+          const getModel = res.find(x => x.Variable === "Model");
+          const getYear = res.find(x => x.Variable === "Model Year");
+          
+          if (getMake && getMake.Value && !inputs.marca.value) 
+            inputs.marca.value = getMake.Value.toUpperCase();
+          if (getModel && getModel.Value && !inputs.linea.value) 
+            inputs.linea.value = getModel.Value.toUpperCase();
+          if (getYear && getYear.Value && !inputs.anio.value) 
+            inputs.anio.value = getYear.Value;
+        })
+        .catch(err => console.log('Error VIN decode:', err));
     }
 
+    // Extraer número de motor
     const motor = texto.match(/(MOTOR|FABRICADO EN|HECHO EN|SIN NÚMERO|S\/N|SN|NO TIENE|NO CUENTA)\s*[A-Z0-9ÁÉÍÓÚÑ\s]{4,}/);
     if (motor) inputs.motor.value = limpiar(motor[0]);
+
+    // Extraer color (palabras comunes)
+    const colores = ['ROJO', 'AZUL', 'BLANCO', 'NEGRO', 'GRIS', 'PLATA', 'PLATEADO', 'VERDE', 'AMARILLO', 'NARANJA', 'CAFE', 'BEIGE'];
+    colores.forEach(color => {
+      if (texto.includes(color) && !inputs.color.value) {
+        inputs.color.value = color;
+      }
+    });
+
+    // Extraer nombre (después de "NOMBRE" o "CONTRIBUYENTE")
+    const nombre = texto.match(/(NOMBRE|CONTRIBUYENTE|TITULAR)[:\s]+([A-ZÁÉÍÓÚÑ\s]{10,})/);
+    if (nombre && nombre[2]) {
+      inputs.nombre.value = limpiar(nombre[2]);
+    }
   });
+
+  // Establecer fecha de hoy por defecto
+  document.getElementById('fecha_inicio').valueAsDate = new Date();
 </script>
 </body>
 </html>
