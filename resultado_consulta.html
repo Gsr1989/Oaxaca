@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Folio - Oaxaca</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header img, .franja-abajo img, footer img {
+            width: 100%;
+            display: block;
+        }
+        .titulo {
+            text-align: center;
+            font-size: 28px;
+            margin: 30px 0 10px;
+            font-weight: bold;
+            color: #222;
+        }
+        .subtitulo {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .formulario {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 15px;
+            background: #f9f9f9;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .campo {
+            margin-bottom: 20px;
+        }
+        .campo label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-size: 18px;
+            box-sizing: border-box;
+            text-align: center;
+            letter-spacing: 2px;
+            transition: border-color 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #8a1538;
+        }
+        .btn {
+            background: #8a1538;
+            color: #fff;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #6e0f2f;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .info-box h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        .info-box p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        .volver {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .volver a {
+            background: #6c757d;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 15px;
+        }
+        .volver a:hover {
+            background: #5a6268;
+        }
+        @media(max-width:600px){
+            .titulo { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
+</header>
+
+<div class="titulo">Consulta de Folio</div>
+<div class="subtitulo">Secretaría de Movilidad - Oaxaca</div>
+
+<form method="POST" class="formulario">
+    <div class="info-box">
+        <h4>ℹ️ Información</h4>
+        <p>Ingresa el número de folio para consultar el estado de tu permiso.</p>
+        <p>Ejemplo: 1670, 1671, 1672...</p>
+    </div>
+    
+    <div class="campo">
+        <label for="folio">🎟️ Número de Folio:</label>
+        <input type="text" 
+               id="folio" 
+               name="folio" 
+               placeholder="Ej: 1670" 
+               required 
+               autofocus>
+    </div>
+    
+    <button type="submit" class="btn">🔍 Consultar Estado</button>
+    
+    <div class="volver">
+        <a href="{{ url_for('admin') if session.get('admin') else url_for('registro_usuario') }}">
+            ← Volver
+        </a>
+    </div>
+</form>
+
+<div class="franja-abajo">
+    <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
+</div>
+
+<footer>
+    <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
+</footer>
+
+</body>
+</html>
