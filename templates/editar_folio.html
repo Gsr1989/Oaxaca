@@ -1,9 +1,8 @@
-<!-- templates/editar_folio.html – versión Oaxaca -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Folio</title>
+    <title>Editar Folio - Oaxaca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body{
@@ -12,7 +11,6 @@
             margin:0;
             padding:0;
         }
-        /* Banners Oaxaca */
         header img,
         .franja-abajo img,
         footer img{
@@ -27,69 +25,204 @@
             font-weight:bold;
             color:#222;
         }
+        
+        .subtitulo{
+            text-align:center;
+            font-size:16px;
+            color:#666;
+            margin-bottom:30px;
+        }
 
         .formulario{
             max-width:600px;
             margin:30px auto;
-            padding:20px;
-            border-radius:10px;
+            padding:30px;
+            border-radius:15px;
             background:#f9f9f9;
+            box-shadow:0 5px 15px rgba(0,0,0,0.1);
         }
-        input,select{
+        
+        .campo{
+            margin-bottom:20px;
+        }
+        
+        .campo label{
+            display:block;
+            font-weight:bold;
+            margin-bottom:8px;
+            color:#333;
+            font-size:15px;
+        }
+        
+        .campo small{
+            display:block;
+            color:#666;
+            font-size:13px;
+            margin-top:5px;
+        }
+        
+        input{
             width:100%;
             padding:12px;
-            margin:10px 0;
-            border-radius:6px;
-            border:1px solid #ccc;
+            border-radius:8px;
+            border:2px solid #ddd;
             font-size:16px;
+            box-sizing:border-box;
+            transition:border-color 0.3s ease;
         }
+        
+        input:focus{
+            outline:none;
+            border-color:#8a1538;
+        }
+        
         .btn{
             background:#8a1538;
             color:#fff;
             border:none;
             padding:14px 22px;
             font-size:16px;
-            border-radius:6px;
+            border-radius:8px;
             cursor:pointer;
             transition:background .3s ease;
             width:100%;
-            margin-top:15px;
+            margin-top:10px;
+            font-weight:bold;
         }
         .btn:hover{background:#6e0f2f;}
+        
+        .btn-secundario{
+            background:#6c757d;
+            text-decoration:none;
+            display:block;
+            text-align:center;
+        }
+        .btn-secundario:hover{
+            background:#5a6268;
+        }
+        
+        .info-box{
+            background:#fff3cd;
+            border-left:4px solid #ffc107;
+            padding:15px;
+            margin-bottom:20px;
+            border-radius:5px;
+        }
+        
+        .info-box h4{
+            margin:0 0 10px 0;
+            color:#856404;
+        }
+        
+        .info-box p{
+            margin:5px 0;
+            color:#856404;
+            font-size:14px;
+        }
 
         @media(max-width:600px){
             .titulo{font-size:24px;margin-top:20px;}
+            .formulario{padding:20px;}
         }
     </style>
 </head>
 <body>
 
-    <!-- Encabezado Oaxaca -->
     <header>
         <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
     </header>
 
     <div class="titulo">Editar Registro de Folio</div>
+    <div class="subtitulo">Secretaría de Movilidad - Oaxaca</div>
 
     <form method="POST" class="formulario">
-        <input type="text"   name="folio"           placeholder="Folio"            value="{{ folio.folio }}"           required>
-        <input type="text"   name="marca"           placeholder="Marca"            value="{{ folio.marca }}"           required>
-        <input type="text"   name="linea"           placeholder="Línea"            value="{{ folio.linea }}"           required>
-        <input type="number" name="anio"            placeholder="Año"              value="{{ folio.anio }}"            required>
-        <input type="text"   name="numero_serie"    placeholder="Número de Serie"  value="{{ folio.numero_serie }}"    required>
-        <input type="text"   name="numero_motor"    placeholder="Número de Motor"  value="{{ folio.numero_motor }}"    required>
-        <input type="date"   name="fecha_expedicion"   value="{{ folio.fecha_expedicion.split('T')[0] }}" required>
-        <input type="date"   name="fecha_vencimiento"  value="{{ folio.fecha_vencimiento.split('T')[0] }}" required>
+        
+        <div class="info-box">
+            <h4>⚠️ Atención</h4>
+            <p>Puedes editar todos los campos, <strong>incluyendo el folio</strong>.</p>
+            <p>Los cambios se reflejarán inmediatamente en el sistema.</p>
+        </div>
+        
+        <div class="campo">
+            <label for="folio">🎟️ Folio:</label>
+            <input type="text" id="folio" name="folio" 
+                   value="{{ folio.folio }}" 
+                   required>
+            <small>Puedes cambiar el número de folio si es necesario</small>
+        </div>
 
-        <button type="submit" class="btn">Guardar Cambios</button>
+        <div class="campo">
+            <label for="marca">🚗 Marca:</label>
+            <input type="text" id="marca" name="marca" 
+                   value="{{ folio.marca }}" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="linea">🏷️ Línea:</label>
+            <input type="text" id="linea" name="linea" 
+                   value="{{ folio.linea }}" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="anio">📅 Año:</label>
+            <input type="number" id="anio" name="anio" 
+                   value="{{ folio.anio }}" 
+                   min="1900" max="2099" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="serie">🔢 Número de Serie (VIN):</label>
+            <input type="text" id="serie" name="serie" 
+                   value="{{ folio.numero_serie }}" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="motor">⚙️ Número de Motor:</label>
+            <input type="text" id="motor" name="motor" 
+                   value="{{ folio.numero_motor }}" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="color">🎨 Color del Vehículo:</label>
+            <input type="text" id="color" name="color" 
+                   value="{{ folio.color or 'N/A' }}" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="nombre">👤 Nombre del Titular:</label>
+            <input type="text" id="nombre" name="nombre" 
+                   value="{{ folio.nombre or 'SIN NOMBRE' }}" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="fecha_expedicion">📆 Fecha de Expedición:</label>
+            <input type="date" id="fecha_expedicion" name="fecha_expedicion" 
+                   value="{{ folio.fecha_expedicion.split('T')[0] }}" 
+                   required>
+        </div>
+
+        <div class="campo">
+            <label for="fecha_vencimiento">⏰ Fecha de Vencimiento:</label>
+            <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" 
+                   value="{{ folio.fecha_vencimiento.split('T')[0] }}" 
+                   required>
+        </div>
+
+        <button type="submit" class="btn">💾 Guardar Cambios</button>
+        <a href="{{ url_for('admin_folios') }}" class="btn btn-secundario">← Volver sin guardar</a>
     </form>
 
-    <!-- Franja Oaxacaabajo pegada al pie -->
     <div class="franja-abajo">
         <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
     </div>
 
-    <!-- Pie Masabajo -->
     <footer>
         <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
     </footer>
