@@ -1,9 +1,8 @@
-<!-- templates/crear_usuario.html – versión Oaxaca -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Crear Usuario</title>
+    <title>Crear Usuario - Oaxaca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body{
@@ -12,7 +11,6 @@
             margin:0;
             padding:0;
         }
-        /* Banners Oaxaca */
         header img,
         .franja-abajo img,
         footer img{
@@ -27,63 +25,127 @@
             font-weight:bold;
             color:#222;
         }
+        
+        .subtitulo{
+            text-align:center;
+            font-size:16px;
+            color:#666;
+            margin-bottom:30px;
+        }
 
         .formulario{
             max-width:600px;
             margin:30px auto;
-            padding:20px;
-            border-radius:10px;
+            padding:30px;
+            border-radius:15px;
             background:#f9f9f9;
+            box-shadow:0 5px 15px rgba(0,0,0,0.1);
         }
+        
+        .campo{
+            margin-bottom:20px;
+        }
+        
+        .campo label{
+            display:block;
+            font-weight:bold;
+            margin-bottom:8px;
+            color:#333;
+            font-size:15px;
+        }
+        
+        .campo small{
+            display:block;
+            color:#666;
+            font-size:13px;
+            margin-top:5px;
+        }
+        
         input{
             width:100%;
             padding:12px;
-            margin:10px 0;
-            border-radius:6px;
-            border:1px solid #ccc;
+            border-radius:8px;
+            border:2px solid #ddd;
             font-size:16px;
+            box-sizing:border-box;
+            transition:border-color 0.3s ease;
         }
+        
+        input:focus{
+            outline:none;
+            border-color:#8a1538;
+        }
+        
         .btn,.nav-btn{
             background:#8a1538;
             color:#fff;
             border:none;
             padding:14px 22px;
             font-size:16px;
-            border-radius:6px;
+            border-radius:8px;
             cursor:pointer;
             transition:background .3s ease;
             width:100%;
-            margin-top:15px;
+            margin-top:10px;
             text-align:center;
             text-decoration:none;
             display:block;
+            font-weight:bold;
         }
         .btn:hover,.nav-btn:hover{background:#6e0f2f;}
+        
+        .nav-btn{
+            background:#6c757d;
+            margin-top:10px;
+        }
+        .nav-btn:hover{
+            background:#5a6268;
+        }
 
         .mensaje{
             margin:20px auto;
             max-width:600px;
-            padding:10px;
+            padding:15px;
             text-align:center;
             font-weight:bold;
-            border-radius:5px;
+            border-radius:8px;
         }
         .success{background:#4CAF50;color:#fff;}
         .error{background:#f44336;color:#fff;}
+        
+        .info-box{
+            background:#e3f2fd;
+            border-left:4px solid #2196F3;
+            padding:15px;
+            margin-bottom:20px;
+            border-radius:5px;
+        }
+        
+        .info-box h4{
+            margin:0 0 10px 0;
+            color:#1976d2;
+        }
+        
+        .info-box p{
+            margin:5px 0;
+            color:#555;
+            font-size:14px;
+        }
 
         @media(max-width:600px){
             .titulo{font-size:24px;margin-top:20px;}
+            .formulario{padding:20px;}
         }
     </style>
 </head>
 <body>
 
-    <!-- Encabezado Oaxaca -->
     <header>
         <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
     </header>
 
-    <div class="titulo">Secretaría de Movilidad</div>
+    <div class="titulo">Crear Nuevo Usuario</div>
+    <div class="subtitulo">Secretaría de Movilidad - Oaxaca</div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -94,24 +156,51 @@
     {% endwith %}
 
     <form method="POST" class="formulario">
-        <input type="text"     name="username" placeholder="Nombre de usuario" required>
-        <input type="password" name="password" placeholder="Contraseña"        required>
-        <input type="number"   name="folios"   placeholder="Cantidad de folios" required>
-        <button type="submit" class="btn">Crear Usuario</button>
+        
+        <div class="info-box">
+            <h4>ℹ️ Información</h4>
+            <p>Los usuarios podrán generar permisos hasta agotar los folios asignados.</p>
+            <p>Pueden ver sus permisos generados y descargar los PDFs.</p>
+        </div>
+        
+        <div class="campo">
+            <label for="username">👤 Nombre de Usuario:</label>
+            <input type="text" id="username" name="username" 
+                   placeholder="Ej: usuario123" 
+                   required 
+                   autocomplete="off">
+            <small>Este será el usuario para iniciar sesión</small>
+        </div>
+
+        <div class="campo">
+            <label for="password">🔒 Contraseña:</label>
+            <input type="password" id="password" name="password" 
+                   placeholder="Contraseña segura" 
+                   required 
+                   autocomplete="new-password">
+            <small>Mínimo 6 caracteres recomendados</small>
+        </div>
+
+        <div class="campo">
+            <label for="folios">🎟️ Cantidad de Folios Asignados:</label>
+            <input type="number" id="folios" name="folios" 
+                   placeholder="Ej: 100" 
+                   min="1" 
+                   required>
+            <small>Número de permisos que podrá generar este usuario</small>
+        </div>
+
+        <button type="submit" class="btn">✅ Crear Usuario</button>
     </form>
 
-    <div class="formulario">
-        <a href="{{ url_for('admin') }}"          class="nav-btn">Volver al Panel</a>
-        <a href="{{ url_for('consulta_folio') }}" class="nav-btn">Consultar Folio</a>
-        <a href="{{ url_for('logout') }}"         class="nav-btn">Cerrar Sesión</a>
+    <div class="formulario" style="padding:15px;">
+        <a href="{{ url_for('admin') }}" class="nav-btn">← Volver al Panel</a>
     </div>
 
-    <!-- Franja Oaxacaabajo pegada al pie -->
     <div class="franja-abajo">
         <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
     </div>
 
-    <!-- Pie Masabajo -->
     <footer>
         <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
     </footer>
