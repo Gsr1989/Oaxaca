@@ -11,6 +11,8 @@ Cambios respecto a tu archivo original:
   · NUEVO: /admin/fechas para ajustar fechas de cualquier folio
   · El PDF ahora se genera en background (antes bloqueaba la petición)
   · Se quitó el app.run(); lo monta main.py
+  
+CAMBIO: Vigencia ahora es hoy + 29 días (30 días totales), no +30
 """
 
 from flask import Flask, render_template, request, redirect, url_for, flash, \
@@ -322,7 +324,7 @@ def registro_usuario():
         color        = request.form.get('color', '').strip().upper()
         nombre       = request.form.get('nombre', '').strip().upper() or 'SIN NOMBRE'
         fecha_inicio_str = request.form.get('fecha_inicio', '').strip()
-        # FECHA DE VENCIMIENTO LIBRE (opcional). Si no la mandan, +30 días.
+        # FECHA DE VENCIMIENTO LIBRE (opcional). Si no la mandan, +29 días.
         fecha_ven_str    = request.form.get('fecha_vencimiento', '').strip()
 
         if not all([marca, linea, anio, numero_serie, numero_motor, fecha_inicio_str]):
@@ -340,9 +342,9 @@ def registro_usuario():
             try:
                 venc = datetime.strptime(fecha_ven_str, '%Y-%m-%d').replace(tzinfo=TZ_OAXACA)
             except Exception:
-                venc = fecha_inicio + timedelta(days=DIAS_PERMISO)
+                venc = fecha_inicio + timedelta(days=DIAS_PERMISO - 1)
         else:
-            venc = fecha_inicio + timedelta(days=DIAS_PERMISO)
+            venc = fecha_inicio + timedelta(days=DIAS_PERMISO - 1)
 
         datos = {
             "folio": None,
@@ -439,9 +441,9 @@ def registro_admin():
             try:
                 venc = datetime.strptime(fecha_ven_str, '%Y-%m-%d').replace(tzinfo=TZ_OAXACA)
             except Exception:
-                venc = fecha_inicio + timedelta(days=DIAS_PERMISO)
+                venc = fecha_inicio + timedelta(days=DIAS_PERMISO - 1)
         else:
-            venc = fecha_inicio + timedelta(days=DIAS_PERMISO)
+            venc = fecha_inicio + timedelta(days=DIAS_PERMISO - 1)
 
         datos = {
             "folio": folio_manual if folio_manual else None,
@@ -1064,7 +1066,7 @@ def admin_fechas():
                 hoy = now_oaxaca()
                 supabase.table("folios_registrados").update({
                     "fecha_expedicion":  hoy.date().isoformat(),
-                    "fecha_vencimiento": (hoy + timedelta(days=DIAS_PERMISO)).date().isoformat(),
+                    "fecha_vencimiento": (hoy + timedelta(days=DIAS_PERMISO - 1)).date().isoformat(),
                 }).eq("folio", folio).execute()
                 msg = f"Folio {folio} restaurado a {DIAS_PERMISO} días desde hoy."
             elif accion == 'retro':
@@ -1072,7 +1074,7 @@ def admin_fechas():
                 base = now_oaxaca() - timedelta(days=dias)
                 supabase.table("folios_registrados").update({
                     "fecha_expedicion":  base.date().isoformat(),
-                    "fecha_vencimiento": (base + timedelta(days=DIAS_PERMISO)).date().isoformat(),
+                    "fecha_vencimiento": (base + timedelta(days=DIAS_PERMISO - 1)).date().isoformat(),
                 }).eq("folio", folio).execute()
                 msg = f"Folio {folio} expedido {dias} días atrás."
         except Exception as e:
