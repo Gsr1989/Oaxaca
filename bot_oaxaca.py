@@ -461,7 +461,7 @@ async def get_nombre(message: types.Message, state: FSMContext):
         return
 
     hoy       = datetime.now(TZ_MEXICO)
-    fecha_ven = hoy + timedelta(days=DIAS_PERMISO)
+    fecha_ven = hoy + timedelta(days=DIAS_PERMISO - 1)
 
     # Limpia estado ANTES — evita re-triggers si Telegram reintenta
     await state.clear()
