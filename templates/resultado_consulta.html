@@ -321,6 +321,12 @@ content="https://www.oaxaca.gob.mx/semovi/wp-content/uploads/sites/34/2019/07/fa
         background: #6e0f2f;
     }
 
+    /* Banners del carrusel lateral con href="" (recargaban la ruta actual y mandaban a capturar folio manual) */
+    #carouselBanners a[href=""] {
+        pointer-events: none;
+        cursor: default;
+    }
+
     @media(max-width:600px) {
         .consulta-oaxaca .titulo { font-size: 20px; }
         .consulta-oaxaca .estado { font-size: 20px; }
@@ -809,10 +815,6 @@ gyroscope; picture-in-picture" allowfullscreen></iframe>
     {% endif %}
 
     <div class="valido">DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO</div>
-
-    <div class="btn-regresar">
-        <a href="{{ url_for('consulta_folio') }}">Regresar</a>
-    </div>
 
 </div>
 {% endif %}
