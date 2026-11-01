@@ -214,9 +214,21 @@ content="https://www.oaxaca.gob.mx/semovi/wp-content/uploads/sites/34/2019/07/fa
         padding: 0;
     }
 
-    .consulta-oaxaca header img,
+    .consulta-oaxaca .co-header,
+    .consulta-oaxaca .co-footer {
+        position: static !important;
+        top: auto !important;
+        bottom: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        z-index: auto !important;
+    }
+
+    .consulta-oaxaca .co-header img,
     .consulta-oaxaca .franja-abajo img,
-    .consulta-oaxaca footer img {
+    .consulta-oaxaca .co-footer img {
         width: 100%;
         display: block;
     }
@@ -762,9 +774,9 @@ gyroscope; picture-in-picture" allowfullscreen></iframe>
 {% if resultado %}
 <div class="consulta-oaxaca">
 
-    <header>
+    <div class="co-header">
         <img src="{{ url_for('static', filename='Oaxacaarriba.jpg') }}" alt="Encabezado Oaxaca">
-    </header>
+    </div>
 
     <div class="titulo">Secretaría de Movilidad</div>
     <div class="subtitulo">Gobierno del Estado de Oaxaca</div>
@@ -810,9 +822,9 @@ gyroscope; picture-in-picture" allowfullscreen></iframe>
         <img src="{{ url_for('static', filename='Oaxacaabajo.jpg') }}" alt="Franja Oaxacaabajo">
     </div>
 
-    <footer>
+    <div class="co-footer">
         <img src="{{ url_for('static', filename='Masabajo.jpg') }}" alt="Pie de página Oaxaca">
-    </footer>
+    </div>
 
 </div>
 {% endif %}
