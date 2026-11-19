@@ -13,6 +13,12 @@ Cambios respecto a tu archivo original:
   · Se quitó el app.run(); lo monta main.py
   
 CAMBIO: Vigencia ahora es hoy + 29 días (30 días totales), no +30
+
+v5.1:
+  · /admin/timers_bot: nombres escapados (antes iban crudos al HTML), botón
+    "Detener TODOS los timers" (todos los usuarios de Telegram) y mensaje de resultado
+  · Los timers siguen solo en RAM; al detenerlos solo se marca TIMER_DETENIDO
+    en los folios que seguían PENDIENTE
 """
 
 from flask import Flask, render_template, request, redirect, url_for, flash, \
@@ -1278,7 +1284,60 @@ def admin_agregar_registro(nombre_tabla):
                            nombre_tabla=nombre_tabla, info_tabla=info)
 
 
-# ===================== TIMERS DEL BOT (nuevo con la fusión) ===================
+# ===================== TIMERS DEL BOT (SOLO RAM) ===================
+def _pagina_timers_bot(activos, msg=""):
+    esc = _html.escape
+
+    filas = "".join(
+        f"<tr><td><strong>{esc(str(t['folio']))}</strong></td>"
+        f"<td>{esc(str(t['nombre']))}</td>"
+        f"<td>{esc(str(t.get('user_id', '')))}</td>"
+        f"<td>{esc(str(t['restante']))}</td>"
+        f"<td><form method='POST' action='/admin/timer_bot_detener/{esc(str(t['folio']))}' "
+        f"style='display:inline' "
+        f"onsubmit=\"return confirm('¿Detener timer de {esc(str(t['folio']))}?')\">"
+        f"<button class='del' type='submit'>Detener</button>"
+        f"</form></td></tr>"
+        for t in activos
+    ) or ("<tr><td colspan='5' style='text-align:center;color:#999;padding:22px'>"
+          "Sin timers activos</td></tr>")
+
+    aviso = (f'<div class="nota" style="border-left-color:#0a6b3d;background:#e7f8ee">'
+             f'<strong>{esc(msg)}</strong></div>') if msg else ""
+
+    return Response(_editor_head("Timers del Bot") + f"""
+<div class="bar">⏱️ Timers del Bot — Oaxaca
+  <span style="margin-left:auto"><a href="/admin">← Panel</a></span>
+</div>
+<div class="wrap">
+  {aviso}
+  <div class="nota">
+    Timers de 36h de los folios generados por el bot de Telegram. Viven solo en
+    memoria. Los folios detenidos quedan como TIMER_DETENIDO y no se borran solos.
+  </div>
+  <div class="card">
+    <div style="font-size:16px;font-weight:700;margin-bottom:12px">
+      ⏱️ Timers activos: {len(activos)}
+    </div>
+    <form method="POST" action="/admin/timers_bot/detener_todos"
+          onsubmit="return confirm('¿Detener TODOS los timers del bot de todos los usuarios?')">
+      <button class="btn" type="submit"
+              style="background:#b3261e;color:#fff;width:100%;justify-content:center;padding:14px;font-size:15px">
+        🛑 Detener TODOS los timers
+      </button>
+    </form>
+    <p style="font-size:12px;color:#777;margin:10px 0 0">
+      Detiene todos los timers sin importar el usuario de Telegram.
+      Los timers que se creen después seguirán funcionando normal.
+    </p>
+  </div>
+  <div class="tabla-wrap">
+    <table><thead><tr><th>Folio</th><th>Titular</th><th>Usuario TG</th><th>Restante</th><th>Acción</th></tr></thead>
+    <tbody>{filas}</tbody></table>
+  </div>
+</div></body></html>""", mimetype="text/html")
+
+
 @app.route('/admin/timers_bot')
 def admin_timers_bot():
     if not session.get('admin'):
@@ -1289,41 +1348,40 @@ def admin_timers_bot():
     except Exception as e:
         logger.error(f"[TIMERS BOT] {e}")
         activos = []
+    return _pagina_timers_bot(activos, request.args.get('msg', ''))
 
-    filas = "".join(
-        f"<tr><td><strong>{t['folio']}</strong></td><td>{t['nombre']}</td>"
-        f"<td>{t['restante']}</td>"
-        f"<td><form method='POST' action='/admin/timer_bot_detener/{t['folio']}' style='display:inline'>"
-        f"<button class='del' onclick=\"return confirm('¿Detener timer de {t['folio']}?')\">Detener</button>"
-        f"</form></td></tr>"
-        for t in activos
-    ) or "<tr><td colspan='4' style='text-align:center;color:#999;padding:22px'>Sin timers activos</td></tr>"
 
-    return Response(_editor_head("Timers del Bot") + f"""
-<div class="bar">⏱️ Timers del Bot — Oaxaca
-  <span style="margin-left:auto"><a href="/admin">← Panel</a></span>
-</div>
-<div class="wrap">
-  <div class="nota">
-    Timers de 36h de los folios generados por el bot de Telegram. Ahora que el
-    bot y el panel corren en el mismo servicio, puedes detenerlos desde aquí.
-  </div>
-  <div class="tabla-wrap">
-    <table><thead><tr><th>Folio</th><th>Titular</th><th>Restante</th><th>Acción</th></tr></thead>
-    <tbody>{filas}</tbody></table>
-  </div>
-</div></body></html>""", mimetype="text/html")
+@app.route('/admin/timers_bot/detener_todos', methods=['POST'])
+def admin_timers_bot_detener_todos():
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+    n = 0
+    try:
+        import bot_oaxaca
+        cancelados = bot_oaxaca.cancelar_todos()
+        bot_oaxaca.marcar_timer_detenido_sync(cancelados)
+        n = len(cancelados)
+        logger.info(f"[TIMERS BOT] Detener TODOS: {n} timers")
+    except Exception as e:
+        logger.error(f"[TIMERS BOT] {e}")
+        return redirect(url_for('admin_timers_bot', msg=f"Error: {e}"))
+    return redirect(url_for('admin_timers_bot', msg=f"Se detuvieron {n} timers"))
 
 
 @app.route('/admin/timer_bot_detener/<folio>', methods=['POST'])
 def admin_timer_bot_detener(folio):
     if not session.get('admin'):
         return redirect(url_for('login'))
+    folio = folio.strip()
+    msg = ""
     try:
         import bot_oaxaca
-        bot_oaxaca.cancelar_timer_folio(folio.strip())
-        supabase.table("folios_registrados").update(
-            {"estado": "TIMER_DETENIDO"}).eq("folio", folio.strip()).execute()
+        if bot_oaxaca.cancelar_timer_folio(folio):
+            bot_oaxaca.marcar_timer_detenido_sync([folio])
+            msg = f"Timer {folio} detenido"
+        else:
+            msg = f"El timer {folio} ya no estaba activo"
     except Exception as e:
         logger.error(f"[TIMER BOT] {e}")
-    return redirect(url_for('admin_timers_bot'))
+        msg = f"Error: {e}"
+    return redirect(url_for('admin_timers_bot', msg=msg))
